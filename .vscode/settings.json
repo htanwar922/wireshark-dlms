@@ -1,0 +1,28 @@
+{
+	"files.associations": {
+		"*.init": "makefile",
+		"exceptions.h": "c",
+		"except.h": "c",
+		"expert.h": "c",
+		"plugins.h": "c",
+		"functional": "c",
+		"debug.h": "c",
+		"headers.h": "c",
+		"glib.h": "c",
+		"galloca.h": "c",
+		"gtypes.h": "c",
+		"cosem-classes.h": "c",
+		"dlms-proto.h": "c",
+		"dlms-reassembly.h": "c",
+		"dlms-bitsets.h": "c",
+		"dlms-utils.h": "c",
+		"dlms-data.h": "c",
+		"dlms-access.h": "c",
+		"dlms-event.h": "c",
+		"dlms-association.h": "c",
+		"dlms-selective-access.h": "c",
+		"encrypt.h": "c",
+		"utils.h": "c",
+		"aes.h": "c"
+	}
+}
