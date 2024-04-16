@@ -23,6 +23,7 @@
 		"dlms-selective-access.h": "c",
 		"encrypt.h": "c",
 		"utils.h": "c",
-		"aes.h": "c"
+		"aes.h": "c",
+		"dlms-ciphers.h": "c"
 	}
 }

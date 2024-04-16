@@ -64,7 +64,7 @@ dlms_dissect_exception_response(tvbuff_t *tvb, packet_info *pinfo, proto_tree *t
 }
 
 /* Dissect a DLMS Application Packet Data Unit (APDU) */
-static void
+static gboolean
 dlms_dissect_apdu(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, gint offset)
 {
     unsigned choice;
@@ -102,9 +102,46 @@ dlms_dissect_apdu(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, gint offs
         dlms_dissect_access_request(tvb, pinfo, tree, offset);
     } else if (choice == DLMS_ACCESS_RESPONSE) {
         dlms_dissect_access_response(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_GLO_GET_REQUEST) {
+        dlms_dissect_glo_get_request(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_GLO_SET_REQUEST) {
+        dlms_dissect_glo_set_request(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_GLO_ACTION_REQUEST) {
+        dlms_dissect_glo_action_request(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_GLO_GET_RESPONSE) {
+        dlms_dissect_glo_get_response(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_GLO_SET_RESPONSE) {
+        dlms_dissect_glo_set_response(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_GLO_ACTION_RESPONSE) {
+        dlms_dissect_glo_action_response(tvb, pinfo, tree, offset);
+    } else if (choice == 0) {
+        gint length = dlms_get_length(tvb, &offset);
+        proto_tree *subtree = proto_tree_add_subtree(tree, tvb, offset, length, dlms_ett.glo_null, 0, "Null (Glo-Ciphered)");
+
+        dlms_glo_ciphered_apdu apdu;
+        dlms_dissect_glo_ciphered_apdu(tvb, subtree, offset, length, &apdu);
+
+        {{
+            tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, client_system_title, glo_AAD, pinfo);
+            subtree = proto_tree_add_subtree(tree, tvb_plain, 0, tvb_reported_length(tvb_plain), dlms_ett.null, 0, "Null (Decoded)");
+            gboolean ret = dlms_dissect_apdu(tvb_plain, pinfo, subtree, 0);
+            tvb_free(tvb_plain);
+            if (ret)
+                return true;
+        }}{{            
+            tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, server_system_title, glo_AAD, pinfo);
+            subtree = proto_tree_add_subtree(tree, tvb_plain, 0, tvb_reported_length(tvb_plain), dlms_ett.null, 0, "Null (Decoded)");
+            gboolean ret = dlms_dissect_apdu(tvb_plain, pinfo, subtree, 0);
+            tvb_free(tvb_plain);
+            if (ret)
+                return true;
+        }}
+
     } else {
         col_set_str(pinfo->cinfo, COL_INFO, "Unknown APDU");
+        return false;
     }
+    return true;
 }
 
 /* Dissect a check sequence field (HCS or FCS) of an HDLC frame */
@@ -327,7 +364,13 @@ dlms_dissect(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void *data)
     return tvb_captured_length(tvb);
 }
 
-static void
+#include "proto.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void
 dlms_register_protoinfo(void)
 {
     dlms_proto = proto_register_protocol("Device Language Message Specification", "DLMS", "dlms");
@@ -389,43 +432,6 @@ dlms_register_protoinfo(void)
     }
 }
 
-/*
- * The symbols that a Wireshark plugin is required to export.
- */
-
-#define DLMS_PLUGIN_VERSION "0.0.2+"
-
-#if (VERSION_MAJOR > 2) || ((VERSION_MAJOR == 2) && (VERSION_MINOR >= 6))
-
-#define WIRESHARK_VERSION_MAJOR 3
-#define WIRESHARK_VERSION_MINOR 2
-
-
-// WS_DLL_PUBLIC_DEF const gchar plugin_release[] = VERSION_RELEASE;
-WS_DLL_PUBLIC_DEF const gchar plugin_version[] = DLMS_PLUGIN_VERSION;
-WS_DLL_PUBLIC_DEF const gint plugin_want_major = WIRESHARK_VERSION_MAJOR;
-WS_DLL_PUBLIC_DEF const gint plugin_want_minor = WIRESHARK_VERSION_MINOR;
-
-WS_DLL_PUBLIC_DEF void
-plugin_register(void)
-{
-    static proto_plugin p;
-    p.register_protoinfo = dlms_register_protoinfo;
-    p.register_handoff = NULL;
-    proto_register_plugin(&p);
+#ifdef __cplusplus
 }
-
-// WIRESHARK_PLUGIN_REGISTER_EPAN(&module, 0)
-// WIRESHARK_PLUGIN_REGISTER_WIRETAP(&module, 0)
-// WIRESHARK_PLUGIN_REGISTER_CODEC(&module, 0)
-
-#else /* wireshark < 2.6 */
-
-WS_DLL_PUBLIC_DEF const gchar version[] = DLMS_PLUGIN_VERSION;
-WS_DLL_PUBLIC_DEF void
-plugin_register(void)
-{
-    dlms_register_protoinfo();
-}
-
 #endif
