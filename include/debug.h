@@ -39,13 +39,12 @@ dlms_print_half_word(guint16 half_word)
 static void
 dlms_print_word(guint32 word)
 {
-    char buf[10];
-    for (int i = 0; i < sizeof(guint32) * 2; i++) {
-        buf[i] = dlms_nibble_to_char((word >> (sizeof(guint32) * 8 - 4 * i - 4)) & 0x0f);
-    }
-    buf[8] = ' ';
-    buf[9] = '\0';
-    g_print(buf);
+    g_print("%08X ", word);
+}
+static void
+dlms_print_dword(guint64 dword)
+{
+    g_print("%016lX ", dword);
 }
 
 #ifdef __GNUC__

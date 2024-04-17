@@ -42,11 +42,19 @@ dlms_get_class(int class_id) {
         15, /* association ln */
         17, /* sap assignment */
         18, /* image transfer */
+        19, /* IEC local port setup */          // Himanshu - From Gurux
         20, /* activity calendar */
         21, /* register monitor */
         22, /* single action schedule */
-        23, /* iec hdlc setup */
+        23, /* IEC hdlc setup */
+        27, /* modem configuration */           // Himanshu - From Gurux
+        28, /* auto answer */                   // Himanshu - From Gurux
+        29, /* auto connect */                  // Himanshu - From Gurux
         30, /* data protection */
+        40, /* push setup */                    // Himanshu - From Gurux
+        41, /* TCP/UDP Setup */                 // Himanshu - From Gurux
+        42, /* IPv4 setup */                     // Himanshu - From Gurux
+        43, /* MAC address setup */             // Himanshu - From Gurux
         70, /* disconnect control */
         71, /* limiter */
         104, /* zigbee network control */
@@ -198,6 +206,13 @@ dlms_get_class(int class_id) {
                 "image_activate"
             }
         },{
+            "iec_local_port_setup",
+            {
+                // Himanshu - From Gurux
+            },{
+                // Himanshu - From Gurux
+            }
+        },{
             "activity_calendar",
             {
                 "calendar_name_active",
@@ -239,6 +254,27 @@ dlms_get_class(int class_id) {
                 "device_address"
             }
         },{
+            "modem_configuration",
+            {
+                // Himanshu - From Gurux
+            },{
+                // Himanshu - From Gurux
+            }
+        },{
+            "auto_answer",
+            {
+                // Himanshu - From Gurux
+            },{
+                // Himanshu - From Gurux
+            }
+        },{
+            "auto_connect",
+            {
+                // Himanshu - From Gurux
+            },{
+                // Himanshu - From Gurux
+            }
+        },{
             "data_protection",
             {
                 "protection_buffer",
@@ -250,6 +286,34 @@ dlms_get_class(int class_id) {
                 "get_protected_attributes",
                 "set_protected_attributes",
                 "invoke_protected_method"
+            }
+        },{
+            "push_setup",
+            {
+                // Himanshu - From Gurux
+            },{
+                // Himanshu - From Gurux
+            }
+        },{
+            "tcp_udp_setup",
+            {
+                // Himanshu - From Gurux
+            },{
+                // Himanshu - From Gurux
+            }
+        },{
+            "ipv4_setup",
+            {
+                // Himanshu - From Gurux
+            },{
+                // Himanshu - From Gurux
+            }
+        },{
+            "mac_address_setup",
+            {
+                // Himanshu - From Gurux
+            },{
+                // Himanshu - From Gurux
             }
         },{
             "disconnect_control",

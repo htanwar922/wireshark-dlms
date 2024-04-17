@@ -18,7 +18,7 @@ typedef enum {
 
 // Himanshu
 static const char *
-dlms_get_context_name(guint8 v1, guint8 v2, guint16 v3, guint8 v4, guint8 v5, guint8 v6, guint8 v7)
+dlms_get_object_identifier_name(guint8 v1, guint8 v2, guint16 v3, guint8 v4, guint8 v5, guint8 v6, guint8 v7)
 {
     if (v1 == 2 && v2 == 16 && v3 == 756)
         switch ((((v4) << 8 | v5) << 8 | v6) << 8 | v7)
@@ -31,10 +31,22 @@ dlms_get_context_name(guint8 v1, guint8 v2, guint16 v3, guint8 v4, guint8 v5, gu
             return "Context-LN-Cipher";
         case 0x05080104:
             return "Context-SN-Cipher";
+        case 0x05080200:
+            return "MechanismName-No-Authentication";
         case 0x05080201:
-            return "MechanismName-LowLevelSecurity";
+            return "MechanismName-LowLevelSecurity-Authentication";
+        case 0x05080202:
+            return "MechanismName-HighLevelSecurity-Authentication";
+        case 0x05080203:
+            return "MechanismName-HighLevelSecurity-Authentication-MD5";
+        case 0x05080204:
+            return "MechanismName-HighLevelSecurity-Authentication-SHA1";
         case 0x05080205:
-            return "MechanismName-HighLevelSecurity";
+            return "MechanismName-HighLevelSecurity-Authentication-GMAC";
+        case 0x05080206:
+            return "MechanismName-HighLevelSecurity-Authentication-SHA256";
+        case 0x05080207:
+            return "MechanismName-HighLevelSecurity-Authentication-ECDSA";
         default:
             break;
         }
@@ -98,7 +110,7 @@ dlms_set_asn_data_value(tvbuff_t *tvb, proto_tree *tree, proto_item *item, guint
             proto_item_append_text(item, ": %u.%u.%u.%u.%u.%u.%u", value1, value2, value3, value4, value5, value6, value7);
             proto_item_append_text(item, " (joint-iso-itu-t.%u.%u.%u.%u.%u.%u)", tvb_get_guint8(tvb, *offset), value3, value4, value5, value6, value7);
             item = proto_tree_add_item(tree, &dlms_hfi.context_name, tvb, *offset, length, ENC_NA);
-            proto_item_append_text(item, ": %s ", dlms_get_context_name(value1, value2, value3, value4, value5, value6, value7));
+            proto_item_append_text(item, ": %s ", dlms_get_object_identifier_name(value1, value2, value3, value4, value5, value6, value7));
             *offset += 7;
             break;
         }

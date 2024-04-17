@@ -11,83 +11,94 @@ dlms_dissect_conformance(tvbuff_t *tvb, proto_tree *tree, gint offset)
     }
 }
 
-// Himanshu - Page 117 - Green Book
-typedef enum {
-    DLMS_SECURITY_CONTROL_COMPRESSION = 0x80,
-    DLMS_SECURITY_CONTROL_KEY_SET = 0x40,          // {unicast, broadcast}
-    DLMS_SECURITY_CONTROL_ENCRYPTION = 0x20,
-    DLMS_SECURITY_CONTROL_AUTHENTICATION = 0x10,
-    DLMS_SECURITY_CONTROL_SUITE_ID = 0x0f
-} DLMS_SECURITY_CONTROL;
-
-// Himanshu - Page 117,308 - Green Book
-static guint8
-dlms_dissect_security_header(tvbuff_t *tvb, proto_tree *tree, gint offset)
-{
-    proto_tree *subtree;
-    header_field_info *hfi;
-    guint8 ret = tvb_get_guint8(tvb, offset);
-
-    subtree = proto_tree_add_subtree(tree, tvb, offset, 1, dlms_ett.glo_security_control_byte, 0, "Security Control Byte");
-    proto_item_append_text(subtree, ": 0x%02x", tvb_get_guint8(tvb, offset));
-    for (hfi = &dlms_hfi.glo_security_control_compression; hfi <= &dlms_hfi.glo_security_control_suite_id; hfi++) {
-        proto_tree_add_item(subtree, hfi, tvb, offset, 1, ENC_NA);
-    }
-    offset += 1;
-    proto_tree_add_item(tree, &dlms_hfi.glo_invocation_counter, tvb, offset, 4, ENC_NA);
-    offset += 4;
-
-    return ret;
-}
-
-// Himanshu - Page 116 - Green Book
-static guint8
-dlms_dissect_glo_ciphered_apdu(tvbuff_t *tvb, proto_tree *tree, gint offset, gint length)
-{
-    guint8 security_control = dlms_dissect_security_header(tvb, tree, offset);
-    offset += 5;
-
-    guint len = length - 5;
-    if (security_control & DLMS_SECURITY_CONTROL_AUTHENTICATION) {
-        len -= 12;
-    }
-    if (security_control & DLMS_SECURITY_CONTROL_ENCRYPTION) {
-        proto_tree_add_item(tree, &dlms_hfi.glo_ciphertext, tvb, offset, len, ENC_ASCII|ENC_NA);
-    } else {
-        proto_tree_add_item(tree, &dlms_hfi.glo_information, tvb, offset, len, ENC_ASCII|ENC_NA);
-    }
-    offset += len;
-
-    if (security_control & DLMS_SECURITY_CONTROL_AUTHENTICATION) {
-        proto_tree_add_item(tree, &dlms_hfi.glo_authentication_tag, tvb, offset, 12, ENC_ASCII|ENC_NA);
-    }
-    return security_control;
-}
-
 // Himanshu
 static void
 dlms_dissect_context_value(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, gint offset)
 {
     proto_item *item;
-    guint8 length;
 
     guint8 choice = tvb_get_guint8(tvb, offset);
-    item = proto_tree_add_item(tree, &dlms_hfi.choice, tvb, offset, 1, ENC_NA);
+    item = proto_tree_add_item(tree, &dlms_hfi.choice, tvb, offset, 2, ENC_NA);
     offset += 1;
-    length = dlms_get_length(tvb, &offset);
 
     if(1) {
         dlms_set_asn_data_value(tvb, tree, item, choice, &offset);
     }
     /* ------------------------- OR ------------------------ */
     else {
+        guint8 length = dlms_get_length(tvb, &offset);
         proto_tree_add_item(tree, &dlms_hfi.application_context_name, tvb, ++offset, length, ENC_NA);
     }
 }
 
 // Himanshu
 static void
-dlms_dissect_user_information(tvbuff_t *tvb, proto_tree *tree, gint offset)
+dlms_dissect_mechanism_name(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, gint offset)
+{
+    proto_item *item = proto_tree_add_item(tree, &dlms_hfi.null, tvb, offset, 0, ENC_NA);
+
+    if(1) {
+        dlms_set_asn_data_value(tvb, tree, item, ASNT_OBJECT_IDENTIFIER, &offset);
+    }
+    /* ------------------------- OR ------------------------ */
+    else {
+        guint8 length = dlms_get_length(tvb, &offset);
+        proto_tree_add_item(tree, &dlms_hfi.mechanism_name, tvb, offset, length, ENC_NA);
+    }
+}
+
+// Himanshu
+static void
+dlms_dissect_initiate_request(tvbuff_t *tvb, proto_tree *tree, gint offset, gint length)
+{
+    proto_tree *subtree = proto_tree_add_subtree(tree, tvb, offset, length, dlms_ett.initiate_request, 0, "Initiate-Request");
+    offset += 1;
+    if (tvb_get_guint8(tvb, offset)) {
+        length = tvb_get_guint8(tvb, offset + 1);
+        proto_tree_add_item(subtree, &dlms_hfi.initiate_request_dedicated_key, tvb, offset, length, ENC_NA);
+        offset += length;
+    }
+    offset += 1;
+    if (tvb_get_guint8(tvb, offset)) {
+        proto_tree_add_item(subtree, &dlms_hfi.initiate_request_response_allowed, tvb, offset, 1, ENC_NA);
+        offset += 1;
+    }
+    offset += 1;
+    if (tvb_get_guint8(tvb, offset)) {
+        proto_tree_add_item(subtree, &dlms_hfi.initiate_request_proposed_qos, tvb, offset, 1, ENC_NA);
+        offset += 1;
+    }
+    offset += 1;
+    proto_tree_add_item(subtree, &dlms_hfi.initiate_request_proposed_dlms_version_no, tvb, offset, 1, ENC_NA);
+    offset += 1;
+    dlms_dissect_conformance(tvb, subtree, offset);
+    offset += 7;
+    proto_tree_add_item(subtree, &dlms_hfi.client_max_receive_pdu_size, tvb, offset, 2, ENC_BIG_ENDIAN);
+}
+
+// Himanshu
+static void
+dlms_dissect_initiate_response(tvbuff_t *tvb, proto_tree *tree, gint offset, gint length)
+{
+    proto_tree *subtree = proto_tree_add_subtree(tree, tvb, offset, length, dlms_ett.initiate_response, 0, "Initiate-Response");
+    offset += 1;
+    if (tvb_get_guint8(tvb, offset)) {
+        proto_tree_add_item(subtree, &dlms_hfi.initiate_response_negotiated_qos, tvb, offset, 1, ENC_NA);
+        offset += 1;
+    }
+    offset += 1;
+    proto_tree_add_item(subtree, &dlms_hfi.initiate_response_negotiated_dlms_version_no, tvb, offset, 1, ENC_NA);
+    offset += 1;
+    dlms_dissect_conformance(tvb, subtree, offset);
+    offset += 7;
+    proto_tree_add_item(subtree, &dlms_hfi.client_max_receive_pdu_size, tvb, offset, 2, ENC_BIG_ENDIAN);
+    offset += 2;
+    proto_tree_add_item(subtree, &dlms_hfi.initiate_response_vaa_name_component, tvb, offset, length - TAG_LEN, ENC_ASCII|ENC_NA);
+}
+
+// Himanshu
+static void
+dlms_dissect_user_information(tvbuff_t *tvb, packet_info * pinfo, proto_tree *tree, gint offset)
 {
     // guint8 choice = tvb_get_guint8(tvb, offset);
     proto_tree_add_item(tree, &dlms_hfi.choice, tvb, offset, 1, ENC_NA);
@@ -99,47 +110,12 @@ dlms_dissect_user_information(tvbuff_t *tvb, proto_tree *tree, gint offset)
     // Page 245 - Green Book.
     switch (tag) {
         case 0x01: { /* initiate-request */
-            proto_tree *subtree = proto_tree_add_subtree(tree, tvb, offset, length, dlms_ett.initiate_request, 0, "Initiate-Request");
-            offset += 1;
-            if (tvb_get_guint8(tvb, offset)) {
-                length = tvb_get_guint8(tvb, offset + 1);
-                proto_tree_add_item(subtree, &dlms_hfi.initiate_request_dedicated_key, tvb, offset, length, ENC_NA);
-                offset += length;
-            }
-            offset += 1;
-            if (tvb_get_guint8(tvb, offset)) {
-                proto_tree_add_item(subtree, &dlms_hfi.initiate_request_response_allowed, tvb, offset, 1, ENC_NA);
-                offset += 1;
-            }
-            offset += 1;
-            if (tvb_get_guint8(tvb, offset)) {
-                proto_tree_add_item(subtree, &dlms_hfi.initiate_request_proposed_qos, tvb, offset, 1, ENC_NA);
-                offset += 1;
-            }
-            offset += 1;
-            proto_tree_add_item(subtree, &dlms_hfi.initiate_request_proposed_dlms_version_no, tvb, offset, 1, ENC_NA);
-            offset += 1;
-            dlms_dissect_conformance(tvb, subtree, offset);
-            offset += 7;
-            proto_tree_add_item(subtree, &dlms_hfi.client_max_receive_pdu_size, tvb, offset, 2, ENC_BIG_ENDIAN);
+            dlms_dissect_initiate_request(tvb, tree, offset, length);
             break;
         }
 
         case 0x08: { /* initiate-response */
-            proto_tree *subtree = proto_tree_add_subtree(tree, tvb, offset, length, dlms_ett.initiate_response, 0, "Initiate-Response");
-            offset += 1;
-            if (tvb_get_guint8(tvb, offset)) {
-                proto_tree_add_item(subtree, &dlms_hfi.initiate_response_negotiated_qos, tvb, offset, 1, ENC_NA);
-                offset += 1;
-            }
-            offset += 1;
-            proto_tree_add_item(subtree, &dlms_hfi.initiate_response_negotiated_dlms_version_no, tvb, offset, 1, ENC_NA);
-            offset += 1;
-            dlms_dissect_conformance(tvb, subtree, offset);
-            offset += 7;
-            proto_tree_add_item(subtree, &dlms_hfi.client_max_receive_pdu_size, tvb, offset, 2, ENC_BIG_ENDIAN);
-            offset += 2;
-            proto_tree_add_item(subtree, &dlms_hfi.initiate_response_vaa_name_component, tvb, offset, length - 12, ENC_ASCII|ENC_NA);
+            dlms_dissect_initiate_response(tvb, tree, offset, length);
             break;
         }
 
@@ -147,14 +123,26 @@ dlms_dissect_user_information(tvbuff_t *tvb, proto_tree *tree, gint offset)
             proto_tree *subtree = proto_tree_add_subtree(tree, tvb, offset, length, dlms_ett.glo_initiate_request, 0, "Initiate-Request (Glo-Ciphered)");
             offset += 1;
             length = dlms_get_length(tvb, &offset);
-            dlms_dissect_glo_ciphered_apdu(tvb, subtree, offset, length);
+            dlms_glo_ciphered_apdu apdu;
+            dlms_dissect_glo_ciphered_apdu(tvb, subtree, offset, length, &apdu);
+
+            tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, client_system_title, glo_AAD, pinfo);
+            dlms_dissect_initiate_request(tvb_plain, subtree, 0, tvb_reported_length(tvb_plain));
+            tvb_free(tvb_plain);
             break;
         }
 
         case 0x28: { /* glo-initiate-response */
             proto_tree *subtree = proto_tree_add_subtree(tree, tvb, offset, length, dlms_ett.glo_initiate_response, 0, "Initiate-Response (Glo-Ciphered)");
+            offset += 1;
+            length = dlms_get_length(tvb, &offset);
+            dlms_glo_ciphered_apdu apdu;
+            dlms_dissect_glo_ciphered_apdu(tvb, subtree, offset, length, &apdu);
+
+            tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, server_system_title, glo_AAD, pinfo);
+            dlms_dissect_initiate_response(tvb_plain, subtree, 0, tvb_reported_length(tvb_plain));
+            tvb_free(tvb_plain);
             break;
-            UNUSED(subtree);
         }
 
         default:
@@ -252,7 +240,7 @@ dlms_dissect_a_associate_aarq(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tre
 
         case 0x8b:{ /* mechanism name */
             subtree = proto_tree_add_subtree(tree, tvb, offset, 2 + length, dlms_ett.mechanism_name, 0, "Mechanism Name");
-            proto_tree_add_item(subtree, &dlms_hfi.mechanism_name, tvb, offset + 2, length, ENC_ASCII|ENC_NA);
+            dlms_dissect_mechanism_name(tvb, pinfo, subtree, offset + 1);
             break;
         }
 
@@ -271,7 +259,7 @@ dlms_dissect_a_associate_aarq(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tre
         case 0xbe:{ /* user-information */
             subtree = proto_tree_add_subtree(tree, tvb, offset, 2 + length, dlms_ett.user_information, 0, "User-Information");
             offset += 2;
-            dlms_dissect_user_information(tvb, subtree, offset);
+            dlms_dissect_user_information(tvb, pinfo, subtree, offset);
             break;
         }
 
@@ -363,7 +351,7 @@ dlms_dissect_a_associate_aare(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tre
         case 0xbe:{ /* user-information */
             subtree = proto_tree_add_subtree(tree, tvb, offset, 2 + length, dlms_ett.user_information, 0, "User-Information");
             offset += 2;
-            dlms_dissect_user_information(tvb, subtree, offset);
+            dlms_dissect_user_information(tvb, pinfo, subtree, offset);
             break;
         }
     }

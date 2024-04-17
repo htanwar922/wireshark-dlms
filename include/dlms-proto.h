@@ -14,9 +14,8 @@ static struct {
     gint hdlc_information;
     gint invoke_id_and_priority;
     gint access_request_specification;
-    gint access_request;
+    gint access_request_type;
     gint access_response_specification;
-    gint access_response;
     gint cosem_attribute_or_method_descriptor;
     gint selective_access_descriptor;
     gint composite_data;
@@ -58,23 +57,37 @@ static struct {
     gint implementation_information;
     gint user_information;
 
-    // Himanshu - Initiate Request
+    // Himanshu - Requests
     gint initiate_request;
+    gint get_request;
+    gint access_request;
 
-    // Himanshu - Initiate Response
+    // Himanshu - Responses
     gint initiate_response;
+    gint get_response;
+    gint access_response;
 
     gint conformance; /* InitiateRequest proposed-conformance and InitiateResponse negotiated-confirmance */
 
-    // Himanshu - Initiate Request (Glo-Ciphered)
+    // Himanshu - Requests (Glo-Ciphered)
     gint glo_initiate_request;
+    gint glo_get_request;
+    gint glo_set_request;
+    gint glo_action_request;
 
-    // Himanshu - Initiate Response (Glo-Ciphered)
+    // Himanshu - Responses (Glo-Ciphered)
     gint glo_initiate_response;
+    gint glo_get_response;
+    gint glo_set_response;
+    gint glo_action_response;
 
     // Himanshu - Glo-Ciphered APDU
     gint glo_security_header;
     gint glo_security_control_byte;
+
+    // Himanshu
+    gint null;
+    gint glo_null;
 } dlms_ett;
 
 /* Expert information (ei) fields */
@@ -87,6 +100,9 @@ static struct {
 /* The DLMS header_field_info (hfi) structures */
 static struct
 {
+    /* Null */
+    header_field_info null;
+
     /* HDLC */
     header_field_info hdlc_flag; /* opening/closing flag */
     header_field_info hdlc_type; /* frame format type */
@@ -250,6 +266,9 @@ static struct
 }
 dlms_hfi HFI_INIT(dlms_proto) =
 {
+    /* Null */
+    { "Null", "dlms.null", FT_NONE, BASE_NONE, 0, 0, 0, HFILL },
+
     /* HDLC */
     { "Flag", "dlms.hdlc.flag", FT_NONE, BASE_NONE, 0, 0, 0, HFILL },
     { "Type", "dlms.hdlc.type", FT_UINT16, BASE_DEC, 0, 0xf000, 0, HFILL },

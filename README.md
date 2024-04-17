@@ -1,32 +1,31 @@
 # wireshark-dlms
 
 Device Language Message Specification (DLMS) dissector plugin for Wireshark.
-Dissects DLMS APDUs in HDLC frames, IEC 61334-4-32 frames, wrapper frames, or raw data.
 
-Common uses:
-- Dissect DLMS protocol in UDP packets with destination port 4059 (the IANA assigned DLMS port), either captured live or imported from a pcap file or hex dump
-- Dissect DLMS protocol sent to the external capture program udpdump, listening on any port, with payload type set to DLMS (see https://github.com/andrebdo/wireshark-udpdump for a pre-compiled version of udpdump that works in Windows)
-- Dissect DLMS protocol handed off by custom dissectors
+The plugin can be used to dissect DLMS protocol, either captured live or imported from a pcap file or hex dump, in TCP packets with destination ports:
+- 4059 (the IANA assigned DLMS port)
+- 4060-4063 (ports used by GuruxDLMS C++ implementation)
+- 4064-4069 (some more ports for user-implementations if desired)
 
 ![Screenshot](screenshot.png)
+
+The figure is showing deciphered packets from Gurux DLMS Client-Server communication.
+- The ciphering parameters can be modified in file `./include/dlms-keys.h`. Currently, only `Security Suite 0` is supported (`AES-128-GCM` symmetric key encryption and authentication tag).
+- The reassembly of Data With-Block is not working perfectly yet.
 
 ## Install
 
 ### GNU/Linux
 
 1. Install the Wireshark development libraries: sudo apt-get install wireshark-dev
-2. Compile the dlms.so plugin: sh build.sh
-3. Copy the dlms.so plugin to the Wireshark plugins directory: sudo cp dlms.so /usr/lib/x86_64-linux-gnu/wireshark/plugins/2.4.5/dlms.so
-
-### Windows
-
-Copy the pre-compiled dlms.dll plugin file to your Wireshark plugins directory (usually C:\Program Files\Wireshark\plugins\2.6\epan\dlms.dll).
-
-To compile the dlms.dll plugin yourself:
-1. Compile the Wireshark source code for Windows, as described in https://www.wireshark.org/docs/wsdg_html_chunked/ChSetupWin32.html
-2. Edit the build.bat file and adjust the directory paths as necessary
-3. Run build.bat
+2. Compile the dlms.so plugin: `./build.sh`
 
 ## License
 
 These files are distributed under the same license as Wireshark (the GNU General Public License version 2).
+
+## References
+1. IEC 62056-5-3:2023 (DLMS Green Book)
+2. IEC 62056-6-2:2023 (DLMS Blue Book)
+3. [Gurux DLMS C++ implementation](https://github.com/Gurux/Gurux.DLMS.cpp)
+4. [GitHub:bearxiong99 Wireshark DLMS plugin template](https://github.com/bearxiong99/wireshark-dlms)

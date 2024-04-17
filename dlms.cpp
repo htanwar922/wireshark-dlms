@@ -42,6 +42,7 @@
 #include "data-types/dlms-bitsets.h"
 #include "data-types/dlms-descriptors.h"
 #include "data-types/dlms-data.h"
+#include "data-types/dlms-data-ciphered.h"
 
 #include "services/dlms-selective-access.h"
 #include "services/dlms-association.h"

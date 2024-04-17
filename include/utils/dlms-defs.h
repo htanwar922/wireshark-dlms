@@ -14,6 +14,15 @@
 #define DLMS_GET_RESPONSE 196
 #define DLMS_SET_RESPONSE 197
 #define DLMS_ACTION_RESPONSE 199
+
+// Global Ciphering - Himanshu
+#define DLMS_GLO_GET_REQUEST 200
+#define DLMS_GLO_SET_REQUEST 201
+#define DLMS_GLO_ACTION_REQUEST 203
+#define DLMS_GLO_GET_RESPONSE 204
+#define DLMS_GLO_SET_RESPONSE 205
+#define DLMS_GLO_ACTION_RESPONSE 207
+
 #define DLMS_EXCEPTION_RESPONSE 216
 #define DLMS_ACCESS_REQUEST 217
 #define DLMS_ACCESS_RESPONSE 218
@@ -30,6 +39,15 @@ static const value_string dlms_apdu_names[] = {
     { DLMS_GET_RESPONSE, "get-response" },
     { DLMS_SET_RESPONSE, "set-response" },
     { DLMS_ACTION_RESPONSE, "action-response" },
+
+    // Himanshu
+    { DLMS_GLO_GET_REQUEST, "glo-get-request" },
+    { DLMS_GLO_SET_REQUEST, "glo-set-request" },
+    { DLMS_GLO_ACTION_REQUEST, "glo-action-request" },
+    { DLMS_GLO_GET_RESPONSE, "glo-get-response" },
+    { DLMS_GLO_SET_RESPONSE, "glo-set-response" },
+    { DLMS_GLO_ACTION_RESPONSE, "glo-action-response" },
+
     { DLMS_EXCEPTION_RESPONSE, "exception-response" },
     { DLMS_ACCESS_REQUEST, "access-request" },
     { DLMS_ACCESS_RESPONSE, "access-response" },

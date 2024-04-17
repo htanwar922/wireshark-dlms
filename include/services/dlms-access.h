@@ -12,7 +12,7 @@ dlms_dissect_access_request_specification(tvbuff_t *tvb, packet_info *pinfo, pro
         int choice = tvb_get_guint8(tvb, *offset);
         subitem = proto_tree_add_item(subtree, &dlms_hfi.access_request, tvb, *offset, 1, ENC_NA);
         proto_item_prepend_text(subitem, "[%u] ", i + 1);
-        subsubtree = proto_item_add_subtree(subitem, dlms_ett.access_request);
+        subsubtree = proto_item_add_subtree(subitem, dlms_ett.access_request_type);
         *offset += 1;
         switch (choice) {
         case DLMS_ACCESS_REQUEST_GET:
@@ -43,6 +43,7 @@ dlms_dissect_access_request(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree,
 
     col_set_str(pinfo->cinfo, COL_INFO, "Access-Request");
 
+    tree = proto_tree_add_subtree(tree, tvb, 0, tvb_reported_length(tvb), dlms_ett.access_request, 0, "Access-Request");
     dlms_dissect_long_invoke_id_and_priority(tree, tvb, &offset);
 
     date_time_offset = offset;
@@ -66,6 +67,7 @@ dlms_dissect_access_response(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree
 
     col_set_str(pinfo->cinfo, COL_INFO, "Access-Response");
 
+    tree = proto_tree_add_subtree(tree, tvb, 0, tvb_reported_length(tvb), dlms_ett.access_response, 0, "Access-Response");
     dlms_dissect_long_invoke_id_and_priority(tree, tvb, &offset);
 
     date_time_offset = offset;
@@ -82,7 +84,7 @@ dlms_dissect_access_response(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree
     for (i = 0; i < sequence_of; i++) {
         item = proto_tree_add_item(subtree, &dlms_hfi.access_response, tvb, offset, 1, ENC_NA);
         proto_item_prepend_text(item, "[%u] ", i + 1);
-        subsubtree = proto_item_add_subtree(item, dlms_ett.access_request);
+        subsubtree = proto_item_add_subtree(item, dlms_ett.access_request_type);
         offset += 1;
         dlms_dissect_data_access_result(tvb, pinfo, subsubtree, &offset);
     }
