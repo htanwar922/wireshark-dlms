@@ -4,7 +4,6 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/include",
-                "${workspaceFolder}/../OpenSSL/include",
                 "/usr/include/wireshark",
                 "/usr/include",
                 "/usr/include/glib-2.0",
@@ -13,7 +12,41 @@
             "defines": [],
             "compilerPath": "/usr/bin/g++",
             "cStandard": "c99",
-            "intelliSenseMode": "linux-gcc-x64"
+            "intelliSenseMode": "linux-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        },
+        {
+            "name": "Win32",
+            "includePath": [
+                "c:/Users/Himanshu.H/Workspace/wireshark-4.2/wireshark-dlms/../wireshark",
+                "c:/Users/Himanshu.H/Workspace/wireshark-4.2/wireshark-dlms/../wireshark/include",
+                "c:/Users/Himanshu.H/Workspace/wireshark-4.2/wireshark-dlms/../wsbuild64",
+                "c:/Users/Himanshu.H/Workspace/wireshark-4.2/wireshark-dlms/../wireshark-x64-libs/vcpkg-export-20240524-1-x64-windows-ws/installed/x64-windows/include/glib-2.0",
+                "c:/Users/Himanshu.H/Workspace/wireshark-4.2/wireshark-dlms/../wireshark-x64-libs/vcpkg-export-20240524-1-x64-windows-ws/installed/x64-windows/lib/glib-2.0/include",
+                "c:/Users/Himanshu.H/Workspace/wireshark-4.2/wireshark-dlms",
+                "c:/Users/Himanshu.H/Workspace/wireshark-4.2/wireshark-dlms/include",
+                "c:/Users/Himanshu.H/Workspace/wireshark-4.2/wireshark-x64-libs/libgcrypt-1.10.2-2-x64-mingw-dynamic-ws/include"
+            ],
+            "defines": [],
+            "compilerPath": "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.40.33807/bin/Hostx64/x64/cl.exe",
+            "cStandard": "c99",
+            "intelliSenseMode": "windows-msvc-x64",
+            "mergeConfigurations": false,
+            "browse": {
+                "path": [
+                    "c:/Users/Himanshu.H/Workspace/wireshark-4.2/wireshark-dlms/../wireshark",
+                    "c:/Users/Himanshu.H/Workspace/wireshark-4.2/wireshark-dlms/../wireshark/include",
+                    "c:/Users/Himanshu.H/Workspace/wireshark-4.2/wireshark-dlms/../wsbuild64",
+                    "c:/Users/Himanshu.H/Workspace/wireshark-4.2/wireshark-dlms/../wireshark-x64-libs/vcpkg-export-20240524-1-x64-windows-ws/installed/x64-windows/include/glib-2.0",
+                    "c:/Users/Himanshu.H/Workspace/wireshark-4.2/wireshark-dlms/../wireshark-x64-libs/vcpkg-export-20240524-1-x64-windows-ws/installed/x64-windows/lib/glib-2.0/include",
+                    "c:/Users/Himanshu.H/Workspace/wireshark-4.2/wireshark-dlms",
+                    "c:/Users/Himanshu.H/Workspace/wireshark-4.2/wireshark-dlms/include",
+                    "c:/Users/Himanshu.H/Workspace/wireshark-4.2/wireshark-dlms",
+                    "c:/Users/Himanshu.H/Workspace/wireshark-4.2/wireshark-x64-libs/libgcrypt-1.10.2-2-x64-mingw-dynamic-ws/include"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "cppStandard": "c++14"
         }
     ],
     "version": 4

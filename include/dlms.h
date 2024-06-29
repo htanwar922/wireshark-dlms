@@ -1,4 +1,4 @@
-#include "utils/headers.h"
+// #include "utils/headers.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -6,6 +6,9 @@ extern "C" {
 
 void
 dlms_register_protoinfo(void);
+
+void
+dlms_reg_handoff(void);
 
 #ifdef __cplusplus
 }

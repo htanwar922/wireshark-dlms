@@ -1,3 +1,11 @@
+!.vs/
+.vs/*
+!.vs/ProjectSettings.json
+!.vs/VSWorkspaceState.json
+
+vcpkg_installed/
+build/
+
 *.so
 *.o
 *.a

@@ -24,6 +24,8 @@
 		"encrypt.h": "c",
 		"utils.h": "c",
 		"aes.h": "c",
-		"dlms-ciphers.h": "c"
+		"dlms-ciphers.h": "c",
+		"proto.h": "c",
+		"winver.h": "c"
 	}
 }

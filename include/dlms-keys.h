@@ -1,32 +1,26 @@
+#pragma once
+
 #include <stdint.h>
 #include <gcrypt.h>
 
 #include "utils/headers.h"
 
-const uint8_t glo_KEY[16] = {
-	0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-	0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
-};
+extern const uint8_t KEY_LEN;
+extern const uint8_t IV_LEN;
+extern const uint8_t AAD_LEN;
+extern const uint8_t TAG_LEN;
 
-const uint8_t client_system_title[8] = {
-	0x4d, 0x4d, 0x4d, 0x00, 0x00, 0xbc, 0x61, 0x4e			// DLMS-UA
-	// 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48			// Gurux
-};
-const uint8_t server_system_title[8] = {
-	// 0x4d, 0x4d, 0x4d, 0x00, 0x00, 0xbc, 0x61, 0x4e			// DLMS-UA
-	0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48			// Gurux
-};
+extern const uint8_t glo_KEY[];
+extern const uint8_t client_system_title[];
+extern const uint8_t server_system_title[];
+extern uint8_t glo_AAD[];
 
-uint8_t glo_AAD[] = {
-	0x00,	// Placeholder for the Security Control field
-	0xd0, 0xd1, 0xd2, 0xd3, 0xd4, 0xd5, 0xd6, 0xd7,
-	0xd8, 0xd9, 0xda, 0xdb, 0xdc, 0xdd, 0xde, 0xdf
-};
+void hex_to_uint8(const char *hex_str, uint8_t *buf, int len);
 
-const uint8_t KEY_LEN = 16;
-const uint8_t IV_LEN = 12;
-const uint8_t AAD_LEN = 17;
-const uint8_t TAG_LEN = 12;
+void read_key_from_file(const char *filename, uint8_t *key_buf);
+void read_client_system_title_from_file(const char *filename, uint8_t *client_system_title_buf);
+void read_server_system_title_from_file(const char *filename, uint8_t *server_system_title_buf);
+void read_aad_from_file(const char *filename, uint8_t *aad_buf);
 
 class AES
 {
