@@ -10,9 +10,9 @@ extern const uint8_t IV_LEN;
 extern const uint8_t AAD_LEN;
 extern const uint8_t TAG_LEN;
 
-extern const uint8_t glo_KEY[];
-extern const uint8_t client_system_title[];
-extern const uint8_t server_system_title[];
+extern uint8_t glo_KEY[];
+extern uint8_t client_system_title[];
+extern uint8_t server_system_title[];
 extern uint8_t glo_AAD[];
 
 void hex_to_uint8(const char *hex_str, uint8_t *buf, int len);

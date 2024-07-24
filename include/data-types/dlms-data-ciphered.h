@@ -37,6 +37,11 @@ struct dlms_glo_ciphered_apdu {
     }
 };
 
+struct dlms_general_glo_ciphered_apdu {
+    uint8_t system_title[8]{ 0 };
+    dlms_glo_ciphered_apdu apdu;
+};
+
 // Himanshu
 gint
 dlms_decompress(uint8_t *data, gint length, uint8_t *& decompressed);
@@ -52,3 +57,7 @@ dlms_dissect_security_header(tvbuff_t *tvb, proto_tree *tree, gint offset, dlms_
 // Himanshu - Page 116 - Green Book
 void
 dlms_dissect_glo_ciphered_apdu(tvbuff_t *tvb, proto_tree *tree, gint offset, gint length, dlms_glo_ciphered_apdu * apdu);
+
+// Himanshu - Page 119 - Green Book
+void
+dlms_dissect_general_glo_ciphered_apdu(tvbuff_t* tvb, packet_info* pinfo, proto_tree* tree, gint offset);

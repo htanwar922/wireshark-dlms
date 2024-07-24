@@ -87,6 +87,10 @@ struct DLMSSubtree {
     // Himanshu
     gint null;
     gint glo_null;
+
+    // Himanshu - General APDUs
+    gint general_glo_ciphered_apdu;
+    gint general_glo_ciphered_apdu_decoded;
 };
 
 /* The DLMS hf_register_info (hfi) structures */
@@ -255,6 +259,9 @@ struct DLMSHeaderInfo
     hf_register_info glo_ciphertext;
         // 125: Authentication Tag //
     hf_register_info glo_authentication_tag;
+
+    // 126: Himanshu - General APDUs
+    hf_register_info general_glo_ciphered_system_title;
 }; // __PACKED__;
 
 /* Expert information (ei) fields */

@@ -79,7 +79,7 @@ dlms_dissect_glo_get_request(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree
 
     tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, client_system_title, glo_AAD, pinfo);
     dlms_dissect_get_request(tvb_plain, pinfo, subtree, 1);
-    tvb_free(tvb_plain);
+    //tvb_free(tvb_plain);
 }
 
 // Himanshu
@@ -94,5 +94,5 @@ dlms_dissect_glo_get_response(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tre
 
     tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, server_system_title, glo_AAD, pinfo);
     dlms_dissect_get_response(tvb_plain, pinfo, subtree, 1);
-    tvb_free(tvb_plain);
+    //tvb_free(tvb_plain);
 }

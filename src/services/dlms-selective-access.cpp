@@ -10,6 +10,12 @@ dlms_dissect_selective_access_descriptor(tvbuff_t *tvb, packet_info *pinfo, prot
 {
     proto_item *item;
     proto_tree *subtree = proto_tree_add_subtree(tree, tvb, *offset, 0, dlms_ett.selective_access_descriptor, &item, "Selective Access Descriptor");
+    if (tvb_get_guint8(tvb, *offset) == 0) {
+        proto_tree_add_item(subtree, *dlms_hdr.null.p_id, tvb, *offset, 1, ENC_NA);
+        *offset += 1;
+        return;
+    }
+    *offset += 1;
     int selector = tvb_get_guint8(tvb, *offset);
     proto_tree_add_item(subtree, *dlms_hdr.access_selector.p_id, tvb, *offset, 1, ENC_NA);
     *offset += 1;

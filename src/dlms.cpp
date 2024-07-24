@@ -91,6 +91,8 @@ dlms_dissect_apdu(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, gint offs
         dlms_dissect_glo_set_response(tvb, pinfo, tree, offset);
     } else if (choice == DLMS_GLO_ACTION_RESPONSE) {
         dlms_dissect_glo_action_response(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_GENERAL_GLO_CIPHERING) {
+        dlms_dissect_general_glo_ciphered_apdu(tvb, pinfo, tree, offset);
     } else if (choice == 0) {
         gint length = dlms_get_length(tvb, &offset);
         proto_tree *subtree = proto_tree_add_subtree(tree, tvb, offset, length, dlms_ett.glo_null, 0, "Null (Glo-Ciphered)");
@@ -102,14 +104,14 @@ dlms_dissect_apdu(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, gint offs
             tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, client_system_title, glo_AAD, pinfo);
             subtree = proto_tree_add_subtree(tree, tvb_plain, 0, tvb_reported_length(tvb_plain), dlms_ett.null, 0, "Null (Decoded)");
             gboolean ret = dlms_dissect_apdu(tvb_plain, pinfo, subtree, 0);
-            tvb_free(tvb_plain);
+            //tvb_free(tvb_plain);
             if (ret)
                 return true;
         }}{{
             tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, server_system_title, glo_AAD, pinfo);
             subtree = proto_tree_add_subtree(tree, tvb_plain, 0, tvb_reported_length(tvb_plain), dlms_ett.null, 0, "Null (Decoded)");
             gboolean ret = dlms_dissect_apdu(tvb_plain, pinfo, subtree, 0);
-            tvb_free(tvb_plain);
+            //tvb_free(tvb_plain);
             if (ret)
                 return true;
         }}
@@ -360,21 +362,7 @@ dlms_register_protoinfo(void)
     dlms_proto = proto_register_protocol("Device Language Message Specification", "DLMS", "dlms");
 
     /* Register the dlms_hdr header field info structures */
-    {
-        g_print("dlms_hdr: %d %d\n", dlms_proto, sizeof(dlms_hdr) / sizeof(hf_register_info));
-        for (unsigned i = 0; i < sizeof(dlms_hdr) / sizeof(hf_register_info); i++) {
-            hf_register_info* hfi = (hf_register_info*)&dlms_hdr + i;
-            g_print("%d %d %s\n", *hfi->p_id, hfi->hfinfo.id, hfi->hfinfo.name);
-        }
-
-        proto_register_field_array(dlms_proto, (hf_register_info *)&dlms_hdr, sizeof(DLMSHeaderInfo) / sizeof(hf_register_info));
-
-        g_print("dlms_hdr: %d %d\n", dlms_proto, sizeof(dlms_hdr) / sizeof(hf_register_info));
-        for (unsigned i = 0; i < sizeof(dlms_hdr) / sizeof(hf_register_info); i++) {
-            hf_register_info * hfi = (hf_register_info *)&dlms_hdr + i;
-            g_print("%d %d %s\n", *hfi->p_id, hfi->hfinfo.id, hfi->hfinfo.name);
-        }
-    }
+    proto_register_field_array(dlms_proto, (hf_register_info *)&dlms_hdr, sizeof(DLMSHeaderInfo) / sizeof(hf_register_info));
 
     /* Initialise and register the dlms_ett protocol subtree indices */
     {

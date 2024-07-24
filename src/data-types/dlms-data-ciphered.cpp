@@ -1,9 +1,12 @@
 
 #include "dlms-proto.h"
 
+#include "data-types/dlms-utils.h"
 #include "data-types/dlms-data-ciphered.h"
 
 #include "dlms-keys.h"
+
+#include "dlms.h"
 
 // ==================================== With Security Suite 0 ==================================== //
 
@@ -114,4 +117,39 @@ dlms_dissect_glo_ciphered_apdu(tvbuff_t *tvb, proto_tree *tree, gint offset, gin
         apdu->glo_authentication_tag = tvb_get_ptr(tvb, offset, TAG_LEN);
         proto_tree_add_item(tree, *dlms_hdr.glo_authentication_tag.p_id, tvb, offset, TAG_LEN, ENC_ASCII|ENC_NA);
     }
+}
+
+// Himanshu - Page 119 - Green Book
+void
+dlms_dissect_general_glo_ciphered_apdu(tvbuff_t* tvb, packet_info* pinfo, proto_tree* tree, gint offset)
+{
+    col_set_str(pinfo->cinfo, COL_INFO, "General-Glo-Ciphered");
+
+    gint length = tvb_reported_length_remaining(tvb, offset);
+    proto_tree* subtree = proto_tree_add_subtree(tree, tvb, offset, length, dlms_ett.general_glo_ciphered_apdu, 0, "General-Glo-Ciphered");
+
+    dlms_general_glo_ciphered_apdu general_apdu;
+
+    gint len = dlms_get_length(tvb, &offset);
+    if (len == sizeof general_apdu.system_title)
+    {
+        proto_tree_add_item(subtree, *dlms_hdr.general_glo_ciphered_system_title.p_id, tvb, offset, len, ENC_ASCII | ENC_NA);
+        memcpy(general_apdu.system_title, tvb_get_ptr(tvb, offset, len), len);
+        offset += len;
+    }
+    else {
+        proto_tree_add_item(subtree, *dlms_hdr.general_glo_ciphered_system_title.p_id, tvb, offset, 0, ENC_ASCII | ENC_NA);
+        g_print("Invalid System Title length\n");
+        return;
+    }
+
+    dlms_glo_ciphered_apdu& apdu = general_apdu.apdu;
+
+    len = dlms_get_length(tvb, &offset);
+    dlms_dissect_glo_ciphered_apdu(tvb, subtree, offset, len, &apdu);
+
+    tvbuff_t* tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, general_apdu.system_title, glo_AAD, pinfo);
+    subtree = proto_tree_add_subtree(tree, tvb_plain, 0, apdu.text_len, dlms_ett.general_glo_ciphered_apdu_decoded, 0, "General-Glo-Ciphered (Decoded)");
+    dlms_dissect_apdu(tvb_plain, pinfo, subtree, 0);
+    //tvb_free(tvb_plain);
 }

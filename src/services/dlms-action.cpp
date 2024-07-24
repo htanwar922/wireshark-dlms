@@ -57,6 +57,24 @@ dlms_dissect_action_response(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree
             col_append_fstr(pinfo->cinfo, COL_INFO, " (%s)", result_name);
             expert_add_info(pinfo, item, dlms_ei.no_success.ids);
         }
+        proto_tree *subtree = proto_tree_add_subtree(tree, tvb, offset, -1, dlms_ett.data, 0, "Data");
+        result = tvb_get_guint8(tvb, offset);
+        offset += 1;
+        if (result) {
+            result = tvb_get_guint8(tvb, offset);
+            offset += 1;
+            switch (result) {
+            case 0:
+                dlms_dissect_data(tvb, pinfo, subtree, &offset);
+                break;
+            case 1:
+                col_add_str(pinfo->cinfo, COL_INFO, " (Data-Access-Result)");
+                break;
+            default:
+                col_add_str(pinfo->cinfo, COL_INFO, " (Unknown)");
+                break;
+            }
+        }
     } else {
         col_set_str(pinfo->cinfo, COL_INFO, "Action-Response");
     }
@@ -74,7 +92,7 @@ dlms_dissect_glo_action_request(tvbuff_t *tvb, packet_info *pinfo, proto_tree *t
 
     tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, client_system_title, glo_AAD, pinfo);
     dlms_dissect_action_request(tvb_plain, pinfo, subtree, 1);
-    tvb_free(tvb_plain);
+    //tvb_free(tvb_plain);
 }
 
 // Himanshu
@@ -89,5 +107,5 @@ dlms_dissect_glo_action_response(tvbuff_t *tvb, packet_info *pinfo, proto_tree *
 
     tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, server_system_title, glo_AAD, pinfo);
     dlms_dissect_action_response(tvb_plain, pinfo, subtree, 1);
-    tvb_free(tvb_plain);
+    //tvb_free(tvb_plain);
 }

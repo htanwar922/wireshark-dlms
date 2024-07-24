@@ -23,6 +23,9 @@ const value_string dlms_apdu_names[] = {
     { DLMS_GLO_SET_RESPONSE, "glo-set-response" },
     { DLMS_GLO_ACTION_RESPONSE, "glo-action-response" },
 
+    // Himanshu
+    { DLMS_GENERAL_GLO_CIPHERING, "general-glo-ciphered" },
+
     { DLMS_EXCEPTION_RESPONSE, "exception-response" },
     { DLMS_ACCESS_REQUEST, "access-request" },
     { DLMS_ACCESS_RESPONSE, "access-response" },

@@ -182,6 +182,9 @@ DLMSHeaderInfo dlms_hdr = // DLMSHeaderInfo dlms_hdr HFI_INIT(dlms_proto) =
     { &dlms_hfidx[124], "Ciphertext", "dlms.glo_initiate_request_ciphertext", FT_BYTES, SEP_SPACE, 0, 0, 0, HFILL },
         // 125: Authentication Tag //
     { &dlms_hfidx[125], "Authentication Tag", "dlms.glo_initiate_request_authentication_tag", FT_BYTES, SEP_SPACE, 0, 0, 0, HFILL },
+
+    // 126: Himanshu - General APDUs
+    { &dlms_hfidx[126], "System Title", "dlms.general_glo_ciphered_system_title", FT_BYTES, SEP_SPACE, 0, 0, 0, HFILL },
 };
 
 /* Expert information (ei) fields */

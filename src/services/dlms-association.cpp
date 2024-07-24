@@ -77,9 +77,6 @@ dlms_dissect_initiate_request(tvbuff_t *tvb, proto_tree *tree, gint offset, gint
         offset += 1;
     }
     offset += 1;
-    g_print("HERE : %08x\n", tvb_get_guint32(tvb, offset, ENC_BIG_ENDIAN));
-    g_print("\t%d\n", *dlms_hdr.initiate_request_proposed_dlms_version_no.p_id);
-    g_print("\t%d\n", dlms_hdr.initiate_request_proposed_dlms_version_no.hfinfo.id);
     proto_tree_add_item(subtree, *dlms_hdr.initiate_request_proposed_dlms_version_no.p_id, tvb, offset, 1, ENC_NA);
     offset += 1;
     dlms_dissect_conformance(tvb, subtree, offset);
@@ -139,7 +136,7 @@ dlms_dissect_user_information(tvbuff_t *tvb, packet_info * pinfo, proto_tree *tr
 
             tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, client_system_title, glo_AAD, pinfo);
             dlms_dissect_initiate_request(tvb_plain, subtree, 0, tvb_reported_length(tvb_plain));
-            tvb_free(tvb_plain);
+            //tvb_free(tvb_plain);
             break;
         }
 
@@ -152,7 +149,7 @@ dlms_dissect_user_information(tvbuff_t *tvb, packet_info * pinfo, proto_tree *tr
 
             tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, server_system_title, glo_AAD, pinfo);
             dlms_dissect_initiate_response(tvb_plain, subtree, 0, tvb_reported_length(tvb_plain));
-            tvb_free(tvb_plain);
+            //tvb_free(tvb_plain);
             break;
         }
 
@@ -219,6 +216,9 @@ dlms_dissect_a_associate_aarq(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tre
             offset += 2;    // skip 2 bytes
             length = tvb_get_guint8(tvb, offset + 1);
             proto_tree_add_item(subtree, *dlms_hdr.calling_ap_title.p_id, tvb, offset + 2, length, ENC_ASCII|ENC_NA);
+            for (int i = 0; i < length; i++) {
+                client_system_title[i] = tvb_get_guint8(tvb, offset + 2 + i);
+            }
             break;
         }
 
@@ -336,6 +336,9 @@ dlms_dissect_a_associate_aare(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tre
             offset += 2;    // skip 2 bytes
             length = tvb_get_guint8(tvb, offset + 1);
             proto_tree_add_item(subtree, *dlms_hdr.responding_ap_title.p_id, tvb, offset + 2, length, ENC_ASCII|ENC_NA);
+            for (int i = 0; i < length; i++) {
+                server_system_title[i] = tvb_get_guint8(tvb, offset + 2 + i);
+            }
             break;
         }
 
