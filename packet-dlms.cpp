@@ -1,6 +1,6 @@
-#include "config.h"
+#include <config.h>
 #include <epan/packet.h>
-#include <dlms.h>
+#include "dlms.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,16 +29,15 @@ proto_reg_handoff_dlms(void)
  */
 // WS_DLL_PUBLIC_DEF const gchar plugin_release[] = VERSION_RELEASE;
 WS_DLL_PUBLIC_DEF const gchar plugin_version[] = DLMS_PLUGIN_VERSION;
-WS_DLL_PUBLIC_DEF const gint plugin_want_major = WIRESHARK_VERSION_MAJOR;
-WS_DLL_PUBLIC_DEF const gint plugin_want_minor = WIRESHARK_VERSION_MINOR;
+WS_DLL_PUBLIC_DEF const gint plugin_want_major = VERSION_MAJOR;
+WS_DLL_PUBLIC_DEF const gint plugin_want_minor = VERSION_MINOR;
 
 WS_DLL_PUBLIC_DEF void
 plugin_register(void)
-// proto_register_dlms(void)
 {
-    proto_plugin p;
+    static proto_plugin p;
     p.register_protoinfo = dlms_register_protoinfo;
-    p.register_handoff = NULL;
+    p.register_handoff = dlms_reg_handoff;
     proto_register_plugin(&p);
 }
 
@@ -51,7 +50,6 @@ plugin_register(void)
 WS_DLL_PUBLIC_DEF const gchar version[] = DLMS_PLUGIN_VERSION;
 WS_DLL_PUBLIC_DEF void
 plugin_register(void)
-proto_register_dlms(void)
 {
     dlms_register_protoinfo();
 }

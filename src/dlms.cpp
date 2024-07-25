@@ -52,7 +52,7 @@ dlms_dissect_apdu(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, gint offs
     if (choice == DLMS_DATA_NOTIFICATION) {
         dlms_dissect_data_notification(tvb, pinfo, tree, offset);
     } else if (choice == DLMS_AARQ) {
-    dlms_dissect_aarq(tvb, pinfo, tree, offset);
+        dlms_dissect_aarq(tvb, pinfo, tree, offset);
     } else if (choice == DLMS_AARE) {
         dlms_dissect_aare(tvb, pinfo, tree, offset);
     } else if (choice == DLMS_RLRQ) {
@@ -318,15 +318,14 @@ dlms_dissect_wrapper(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree)
 int
 dlms_dissect(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void *data)
 {
-    header_field_info *hfi;
+    // header_field_info *hfi;
     proto_item *item;
     proto_tree *subtree;
     unsigned first_byte;
 
     col_set_str(pinfo->cinfo, COL_PROTOCOL, "DLMS");
     col_clear(pinfo->cinfo, COL_INFO);
-
-    hfi = proto_registrar_get_nth(dlms_proto);
+    // hfi = proto_registrar_get_nth(dlms_proto);
     item = proto_tree_add_item(tree, dlms_proto, tvb, 0, -1, ENC_NA);
     subtree = proto_item_add_subtree(item, dlms_ett.dlms);
 
@@ -378,7 +377,7 @@ dlms_register_protoinfo(void)
     /* Register the dlms_ei expert info fields */
     {
         expert_module_t *em = expert_register_protocol(dlms_proto);
-        expert_register_field_array(em, (ei_register_info *)&dlms_ei, sizeof DLMSExpertInfo / sizeof ei_register_info);
+        expert_register_field_array(em, (ei_register_info *)&dlms_ei, sizeof (DLMSExpertInfo) / sizeof (ei_register_info));
     }
 
     /* Register the reassembly table */
