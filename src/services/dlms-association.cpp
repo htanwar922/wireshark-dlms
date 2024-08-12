@@ -275,6 +275,7 @@ dlms_dissect_a_associate_aarq(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tre
         }
 
         default:
+            subtree = proto_tree_add_subtree(tree, tvb, offset, 2 + length, dlms_ett.null, 0, "Unknown");
             DISSECTOR_ASSERT_HINT(tag, "Invalid A-ASSOCIATE-ACSE CHOICE");
     }
 }
@@ -362,12 +363,41 @@ dlms_dissect_a_associate_aare(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tre
             break;
         }
 
+        case 0x88:{ /* responder ACSE requirements */                        // 0x80 -- BER type CONTEXT-SPECIFIC
+            subtree = proto_tree_add_subtree(tree, tvb, offset, 2 + length, dlms_ett.responder_acse_requirements, 0, "Sender ACSE Requirements");
+            offset += 2 + 1;
+            proto_tree_add_item(subtree, *dlms_hdr.responder_acse_requirements_authentication.p_id, tvb, offset, 1, ENC_NA);
+            break;
+        }
+
+        case 0x89:{ /* mechanism name */
+            subtree = proto_tree_add_subtree(tree, tvb, offset, 2 + length, dlms_ett.mechanism_name, 0, "Mechanism Name");
+            dlms_dissect_mechanism_name(tvb, pinfo, subtree, offset + 1);
+            break;
+        }
+
+        case 0xaa:{ /* responding authentication value */
+            subtree = proto_tree_add_subtree(tree, tvb, offset, 2 + length, dlms_ett.responding_authentication_value, 0, "Responding Authentication Value");
+            proto_tree_add_item(subtree, *dlms_hdr.responding_authentication_value.p_id, tvb, offset + 2, length, ENC_NA);
+            break;
+        }
+
+        case 0xad:{ /* implementation information */
+            subtree = proto_tree_add_subtree(tree, tvb, offset, 2 + length, dlms_ett.implementation_information, 0, "Implementation Information");
+            proto_tree_add_item(subtree, *dlms_hdr.implementation_information.p_id, tvb, offset + 2, length, ENC_NA);
+            break;
+        }
+
         case 0xbe:{ /* user-information */
             subtree = proto_tree_add_subtree(tree, tvb, offset, 2 + length, dlms_ett.user_information, 0, "User-Information");
             offset += 2;
             dlms_dissect_user_information(tvb, pinfo, subtree, offset);
             break;
         }
+
+        default:
+            subtree = proto_tree_add_subtree(tree, tvb, offset, 2 + length, dlms_ett.null, 0, "Unknown");
+            DISSECTOR_ASSERT_HINT(tag, "Invalid A-ASSOCIATE-ACSE CHOICE");
     }
 }
 

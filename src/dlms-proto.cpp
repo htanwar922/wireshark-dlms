@@ -139,8 +139,7 @@ DLMSHeaderInfo dlms_hdr = // DLMSHeaderInfo dlms_hdr HFI_INIT(dlms_proto) =
     { &dlms_hfidx[i++], "Calling AP invocation-id", "dlms.calling_ap_invocation_id", FT_NONE, BASE_NONE, 0, 0, 0, HFILL },
     { &dlms_hfidx[i++], "Calling AE invocation-id", "dlms.calling_ae_invocation_id", FT_NONE, BASE_NONE, 0, 0, 0, HFILL },
     { &dlms_hfidx[i++], "Authentication", "dlms.sender_acse_requirements_authentication", FT_UINT8, BASE_DEC, 0, 0x80, 0, HFILL },
-    { &dlms_hfidx[i++], "Mechanism Name", "dlms.mechanism_name", FT_OID, BASE_NONE, 0, 0, 0, HFILL },
-    { &dlms_hfidx[i++], "Calling Authentication Value", "dlms.calling_authentication_value", FT_STRING, ENC_ASCII, 0, 0, 0, HFILL },
+    { &dlms_hfidx[i++], "CtoS", "dlms.calling_authentication_value", FT_BYTES, ENC_ASCII, 0, 0, 0, HFILL },
 
     // Himanshu - AARE only
     { &dlms_hfidx[i++], "Result", "dlms.result", FT_NONE, BASE_NONE, 0, 0, 0, HFILL },
@@ -151,8 +150,11 @@ DLMSHeaderInfo dlms_hdr = // DLMSHeaderInfo dlms_hdr HFI_INIT(dlms_proto) =
     { &dlms_hfidx[i++], "Responding AE Qualifier", "dlms.responding_AE_qualifier", FT_BYTES, SEP_SPACE, 0, 0, 0, HFILL },
     { &dlms_hfidx[i++], "Responding AP Invocation_identifier", "dlms.responding_ap_invocation_id", FT_UINT_BYTES, SEP_SPACE, 0, 0, 0, HFILL },
     { &dlms_hfidx[i++], "Responding AE Invocation_identifier", "dlms.responding_ae_invocation_id", FT_UINT_BYTES, SEP_SPACE, 0, 0, 0, HFILL },
+    { &dlms_hfidx[i++], "Authentication", "dlms.responder_acse_requirements_authentication", FT_UINT8, BASE_DEC, 0, 0x80, 0, HFILL },
+    { &dlms_hfidx[i++], "StoC", "dlms.responding_authentication_value", FT_BYTES, ENC_ASCII, 0, 0, 0, HFILL },
 
     // Himanshu - AARQ/AARE
+    { &dlms_hfidx[i++], "Mechanism Name", "dlms.mechanism_name", FT_OID, BASE_NONE, 0, 0, 0, HFILL },
     { &dlms_hfidx[i++], "Implementation Information", "dlms.implementation_information", FT_UINT_BYTES, SEP_SPACE, 0, 0, 0, HFILL },
     { &dlms_hfidx[i++], "User Information", "dlms.user_information", FT_UINT_BYTES, SEP_SPACE, 0, 0, 0, HFILL },
 

@@ -39,7 +39,6 @@ struct DLMSSubtree {
     gint calling_ap_invocation_id;
     gint calling_ae_invocation_id;
     gint sender_acse_requirements;
-    gint mechanism_name;
     gint calling_authentication_value;
 
     // Himanshu - AARE only
@@ -51,8 +50,11 @@ struct DLMSSubtree {
     gint responding_ae_qualifier;
     gint responding_ap_invocation_id;
     gint responding_ae_invocation_id;
+    gint responder_acse_requirements;
+    gint responding_authentication_value;
 
     // Himanshu - AARQ/AARE
+    gint mechanism_name;
     gint implementation_information;
     gint user_information;
 
@@ -215,7 +217,6 @@ struct DLMSHeaderInfo
     hf_register_info calling_ap_invocation_id;
     hf_register_info calling_ae_invocation_id;
     hf_register_info sender_acse_requirements_authentication;
-    hf_register_info mechanism_name;
     hf_register_info calling_authentication_value;
 
     // 100: Himanshu - AARE only
@@ -227,8 +228,11 @@ struct DLMSHeaderInfo
     hf_register_info responding_ae_qualifier;
     hf_register_info responding_ap_invocation_id;
     hf_register_info responding_ae_invocation_id;
+    hf_register_info responder_acse_requirements_authentication;
+    hf_register_info responding_authentication_value;
 
     // 108: Himanshu - AARQ/AARE
+    hf_register_info mechanism_name;
     hf_register_info implementation_information;
     hf_register_info user_information;
 
