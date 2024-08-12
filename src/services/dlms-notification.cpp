@@ -6,7 +6,7 @@
 #include "data-types/dlms-descriptors.h"
 #include "data-types/dlms-data.h"
 
-#include "services/dlms-notofication.h"
+#include "services/dlms-notification.h"
 
 void
 dlms_dissect_data_notification(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, gint offset)

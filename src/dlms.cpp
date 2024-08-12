@@ -26,7 +26,7 @@
 #include "services/dlms-set.h"
 #include "services/dlms-action.h"
 #include "services/dlms-access.h"
-#include "services/dlms-notofication.h"
+#include "services/dlms-notification.h"
 
 void
 dlms_dissect_exception_response(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, gint offset)

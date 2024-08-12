@@ -1,4 +1,15 @@
 
+if (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_SOURCE_DIR})
+
+cmake_minimum_required(VERSION 3.1)
+project(dlms)
+
+message(WARNING "WARNING: Please consider using the Wireshark build system to compile this plugin.")
+
+include(CMakeListsCustom.cmake)
+
+else()
+
 include(WiresharkPlugin)
 include(FindGCRYPT)
 
@@ -49,3 +60,5 @@ CHECKAPI(
 	  ${DISSECTOR_SRC}
 	  ${DISSECTOR_HEADERS}
 )
+
+endif()
