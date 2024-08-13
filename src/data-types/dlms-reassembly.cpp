@@ -13,17 +13,17 @@ reassembly_table dlms_reassembly_table;
 const fragment_items dlms_fragment_items = {
     &dlms_ett.fragment,
     &dlms_ett.fragments,
-    dlms_hdr.fragments.p_id,
-    dlms_hdr.fragment.p_id,
-    dlms_hdr.fragment_overlap.p_id,
-    dlms_hdr.fragment_overlap_conflict.p_id,
-    dlms_hdr.fragment_multiple_tails.p_id,
-    dlms_hdr.fragment_too_long_fragment.p_id,
-    dlms_hdr.fragment_error.p_id,
-    dlms_hdr.fragment_count.p_id,
-    dlms_hdr.reassembled_in.p_id,
-    dlms_hdr.reassembled_length.p_id,
-    dlms_hdr.reassembled_data.p_id,
+    &dlms_hdr.fragments.hfinfo.id,
+    &dlms_hdr.fragment.hfinfo.id,
+    &dlms_hdr.fragment_overlap.hfinfo.id,
+    &dlms_hdr.fragment_overlap_conflict.hfinfo.id,
+    &dlms_hdr.fragment_multiple_tails.hfinfo.id,
+    &dlms_hdr.fragment_too_long_fragment.hfinfo.id,
+    &dlms_hdr.fragment_error.hfinfo.id,
+    &dlms_hdr.fragment_count.hfinfo.id,
+    &dlms_hdr.reassembled_in.hfinfo.id,
+    &dlms_hdr.reassembled_length.hfinfo.id,
+    &dlms_hdr.reassembled_data.hfinfo.id,
     "Fragments"
 };
 
