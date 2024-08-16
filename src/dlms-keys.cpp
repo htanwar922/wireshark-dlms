@@ -28,11 +28,7 @@ uint8_t glo_AAD[AAD_LEN] = {
 
 void hex_to_uint8(const char *hex_str, uint8_t *buf, int len) {
 	for (int i = 0; i < len; i++) {
-		char byte_str[3];
-		byte_str[0] = hex_str[i * 2];
-		byte_str[1] = hex_str[i * 2 + 1];
-		byte_str[2] = '\0';
-		buf[i] = strtol(byte_str, NULL, 16);
+            sscanf(hex_str + 2 * i, "%2hhx", buf + i);
 	}
 }
 

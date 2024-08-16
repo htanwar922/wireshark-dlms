@@ -6,6 +6,7 @@
 // #include "utils/dlms-choices.h"
 // #include "utils/dlms-enums.h"
 // #include "utils/cosem-classes.h"
+#include "utils/envfile.h"
 
 // #include "obis.h"
 // #include "debug.h"
@@ -350,7 +351,9 @@ extern "C" {
 #endif
 
 //#include "test.h"
-
+//#include <stdio.h>
+#include <direct.h>
+//#include <stdlib.h>
 void
 dlms_register_protoinfo(void)
 {
@@ -391,6 +394,19 @@ dlms_register_protoinfo(void)
             dlms_reassembly_free_key_func,
         };
         reassembly_table_init(&dlms_reassembly_table, &f);
+    }
+
+    std::string envFilePath = getenv("env:WIRESHARK_DLMS_CONFIG_FILE") ? getenv("env:WIRESHARK_DLMS_CONFIG_FILE") : "";
+    envFilePath = not envFilePath.empty() ? envFilePath : getenv("WIRESHARK_DLMS_CONFIG_FILE") ? getenv("WIRESHARK_DLMS_CONFIG_FILE") : "";
+    envFilePath = not envFilePath.empty() ? envFilePath : std::string(g_path_get_dirname(__FILE__)) + "/../config/config.env";
+    if (not envFilePath.empty()) {
+        std::map<std::string, std::string> envVariables = readEnvFile(envFilePath);
+        if (envVariables.find("DLMS_GLO_KEY") != envVariables.end()) {
+            hex_to_uint8(envVariables["DLMS_GLO_KEY"].c_str(), glo_KEY, 16);
+        }
+        if (envVariables.find("DLMS_AAD_KEY") != envVariables.end()) {
+            hex_to_uint8(envVariables["DLMS_AAD_KEY"].c_str(), glo_KEY, 16);
+        }
     }
 }
 

@@ -364,7 +364,7 @@ dlms_dissect_a_associate_aare(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tre
         }
 
         case 0x88:{ /* responder ACSE requirements */                        // 0x80 -- BER type CONTEXT-SPECIFIC
-            subtree = proto_tree_add_subtree(tree, tvb, offset, 2 + length, dlms_ett.responder_acse_requirements, 0, "Sender ACSE Requirements");
+            subtree = proto_tree_add_subtree(tree, tvb, offset, 2 + length, dlms_ett.responder_acse_requirements, 0, "Responder ACSE Requirements");
             offset += 2 + 1;
             proto_tree_add_item(subtree, *dlms_hdr.responder_acse_requirements_authentication.p_id, tvb, offset, 1, ENC_NA);
             break;
