@@ -350,10 +350,19 @@ dlms_dissect(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void *data)
 extern "C" {
 #endif
 
-//#include "test.h"
-//#include <stdio.h>
 #include <direct.h>
-//#include <stdlib.h>
+
+const char* glo_KEY_str;
+const char* glo_AAD_str;
+
+void dlms_prefs_cb() {
+    if (strlen(glo_KEY_str) != 32 || strlen(glo_AAD_str) != 32) {
+        return;
+    }
+    hex_to_uint8(glo_KEY_str, glo_KEY, 16);
+    hex_to_uint8(glo_AAD_str, glo_AAD, 16);
+}
+
 void
 dlms_register_protoinfo(void)
 {
@@ -408,6 +417,15 @@ dlms_register_protoinfo(void)
             hex_to_uint8(envVariables["DLMS_AAD_KEY"].c_str(), glo_KEY, 16);
         }
     }
+
+    /* Register preferences for glo_KEY and glo_AAD */
+    module_t *dlms_module = prefs_register_protocol(dlms_proto, dlms_prefs_cb);
+    glo_KEY_str = "000102030405060708090a0b0c0d0e0f";
+    glo_AAD_str = "d0d1d2d3d4d5d6d7d8d9dadbdcdddedf";
+    //uint8_to_hex(glo_KEY, glo_KEY_str, 16);
+    //uint8_to_hex(glo_AAD, glo_AAD_str, 16);
+    prefs_register_string_preference(dlms_module, "glo_key", "Global Key", "Global key for ciphering and deciphering", &glo_KEY_str);
+    prefs_register_string_preference(dlms_module, "glo_aad", "Additional Authenticated Data", "Additional authenticated data for ciphering and deciphering", &glo_AAD_str);
 }
 
 void
