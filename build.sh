@@ -42,13 +42,13 @@ cp $basedir/packet-dlms.cpp $bindir/packet-dlms.c
 
 ar rs $bindir/libdlms-static.a $(find $bindir -type f -name "*.o" | tr '\n' ' ') \
 && ranlib $bindir/libdlms-static.a \
-# && \
-# gcc -Wall -Wno-sign-compare \
-# 	`pkg-config --cflags-only-I wireshark` \
-# 	-Iinclude \
-# 	-shared \
-# 	-o $bindir/libdlms.so \
-# 	$bindir/packet-dlms.c $bindir/libdlms-static.a \
-# && \
-# sudo cp $bindir/libdlms.so /usr/lib/x86_64-linux-gnu/wireshark/plugins/${WIRESHARK_VERSION%.*}/epan
+&& \
+gcc -Wall -Wno-sign-compare \
+	`pkg-config --cflags-only-I wireshark` \
+	-Iinclude \
+	-shared \
+ 	-o $bindir/libdlms.so \
+	$bindir/packet-dlms.c $bindir/libdlms-static.a \
+&& \
+sudo cp $bindir/libdlms.so /usr/lib/x86_64-linux-gnu/wireshark/plugins/${WIRESHARK_VERSION%.*}/epan
 [ $? -eq 0 ] && echo "Build successful" || echo "Build failed"

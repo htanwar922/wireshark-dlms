@@ -5,6 +5,9 @@ extern int dlms_proto;
 
 /* Protocol subtree (ett) indices */
 struct DLMSSubtree {
+    // Himanshu
+    gint null;
+
     gint dlms;
     gint hdlc;
     gint hdlc_format;
@@ -82,17 +85,31 @@ struct DLMSSubtree {
     gint glo_set_response;
     gint glo_action_response;
 
-    // Himanshu - Glo-Ciphered APDU
-    gint glo_security_header;
-    gint glo_security_control_byte;
+    // Himanshu - Requests (Ded-Ciphered)
+    gint ded_get_request;
+    gint ded_set_request;
+    gint ded_action_request;
+    gint ded_event_notification_request;
 
-    // Himanshu
-    gint null;
-    gint glo_null;
+    // Himanshu - Responses (Ded-Ciphered)
+    gint ded_get_response;
+    gint ded_set_response;
+    gint ded_action_response;
+
+    // Himanshu - Ciphered APDU
+    gint security_control_byte;
 
     // Himanshu - General APDUs
     gint general_glo_ciphered_apdu;
+    gint general_ded_ciphered_apdu;
+    gint general_ciphered_apdu;
+    gint general_signed_apdu;
+    gint general_block_transfer_apdu;
     gint general_glo_ciphered_apdu_decoded;
+    gint general_ded_ciphered_apdu_decoded;
+    gint general_ciphered_apdu_decoded;
+    gint general_signed_apdu_decoded;
+    gint general_block_transfer_apdu_decoded;
 };
 
 /* The DLMS hf_register_info (hfi) structures */
@@ -247,25 +264,25 @@ struct DLMSHeaderInfo
     hf_register_info initiate_response_negotiated_dlms_version_no;
     hf_register_info initiate_response_vaa_name_component;
 
-    // Himanshu - Glo-Ciphered APDU
+    // Himanshu - Ciphered APDU
         // 117: Security Header //
             // Security Control Byte //
-    hf_register_info glo_security_control_compression;
-    hf_register_info glo_security_control_key_set;
-    hf_register_info glo_security_control_encryption;
-    hf_register_info glo_security_control_authentication;
-    hf_register_info glo_security_control_suite_id;
+    hf_register_info security_control_compression;
+    hf_register_info security_control_key_set;
+    hf_register_info security_control_encryption;
+    hf_register_info security_control_authentication;
+    hf_register_info security_control_suite_id;
             // Initiator Nonce //
-    hf_register_info glo_invocation_counter;
+    hf_register_info invocation_counter;
         // 123: Information // May be Plaintext or Compressed text
-    hf_register_info glo_information;
+    hf_register_info information;
         // 124: Ciphertext //
-    hf_register_info glo_ciphertext;
+    hf_register_info ciphertext;
         // 125: Authentication Tag //
-    hf_register_info glo_authentication_tag;
+    hf_register_info authentication_tag;
 
-    // 126: Himanshu - General APDUs
-    hf_register_info general_glo_ciphered_system_title;
+    // 126: Himanshu - General
+    hf_register_info system_title;
 }; // __PACKED__;
 
 /* Expert information (ei) fields */

@@ -10,6 +10,8 @@ dlms_get_attribute_name(const dlms_cosem_class *c, int attribute_id) {
         return c->attributes[attribute_id - 2];
     } else if (attribute_id == 1) {
         return "logical_name";
+    } else if (attribute_id == 0) {
+        return "all";
     }
     return 0;
 }

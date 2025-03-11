@@ -6,3 +6,7 @@ dlms_dissect_data_notification(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tr
 
 void
 dlms_dissect_event_notification_request(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, gint offset);
+
+// Himanshu
+void
+dlms_dissect_ded_event_notification_request(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, gint offset);

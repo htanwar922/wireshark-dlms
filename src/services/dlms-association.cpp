@@ -63,8 +63,8 @@ dlms_dissect_initiate_request(tvbuff_t *tvb, proto_tree *tree, gint offset, gint
     offset += 1;
     if (tvb_get_guint8(tvb, offset)) {
         length = tvb_get_guint8(tvb, offset + 1);
-        proto_tree_add_item(subtree, *dlms_hdr.initiate_request_dedicated_key.p_id, tvb, offset, length, ENC_NA);
-        offset += length;
+        proto_tree_add_item(subtree, *dlms_hdr.initiate_request_dedicated_key.p_id, tvb, offset + 2, length, ENC_NA);
+        offset += 1 + length;
     }
     offset += 1;
     if (tvb_get_guint8(tvb, offset)) {
@@ -132,9 +132,9 @@ dlms_dissect_user_information(tvbuff_t *tvb, packet_info * pinfo, proto_tree *tr
             offset += 1;
             length = dlms_get_length(tvb, &offset);
             dlms_glo_ciphered_apdu apdu;
-            dlms_dissect_glo_ciphered_apdu(tvb, subtree, offset, length, &apdu);
+            dlms_dissect_ciphered_apdu(tvb, subtree, offset, length, &apdu);
 
-            tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, client_system_title, glo_AAD, pinfo);
+            tvbuff_t * tvb_plain = dlms_decrypt_ciphered_apdu(&apdu, glo_KEY, client_system_title, ciph_AAD, pinfo);
             dlms_dissect_initiate_request(tvb_plain, subtree, 0, tvb_reported_length(tvb_plain));
             //tvb_free(tvb_plain);
             break;
@@ -145,9 +145,9 @@ dlms_dissect_user_information(tvbuff_t *tvb, packet_info * pinfo, proto_tree *tr
             offset += 1;
             length = dlms_get_length(tvb, &offset);
             dlms_glo_ciphered_apdu apdu;
-            dlms_dissect_glo_ciphered_apdu(tvb, subtree, offset, length, &apdu);
+            dlms_dissect_ciphered_apdu(tvb, subtree, offset, length, &apdu);
 
-            tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, server_system_title, glo_AAD, pinfo);
+            tvbuff_t * tvb_plain = dlms_decrypt_ciphered_apdu(&apdu, glo_KEY, server_system_title, ciph_AAD, pinfo);
             dlms_dissect_initiate_response(tvb_plain, subtree, 0, tvb_reported_length(tvb_plain));
             //tvb_free(tvb_plain);
             break;

@@ -1,6 +1,11 @@
 #include <config.h>
 #include <epan/packet.h>
+
+#ifdef _WIN32
 #include "dlms.h"
+#else
+#include "../include/dlms.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {

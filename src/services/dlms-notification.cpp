@@ -39,3 +39,16 @@ dlms_dissect_event_notification_request(tvbuff_t *tvb, packet_info *pinfo, proto
     subtree = proto_tree_add_subtree(tree, tvb, 0, 0, dlms_ett.data, 0, "Data");
     dlms_dissect_data(tvb, pinfo, subtree, &offset);
 }
+
+// Himanshu
+void
+dlms_dissect_ded_event_notification_request(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, gint offset)
+{
+    proto_tree *subtree;
+
+    col_add_str(pinfo->cinfo, COL_INFO, "Event-Notification-Request");
+    offset += 1; /* time OPTIONAL (assume it is not present) */
+    dlms_dissect_cosem_attribute_descriptor(tvb, pinfo, tree, &offset);
+    subtree = proto_tree_add_subtree(tree, tvb, 0, 0, dlms_ett.data, 0, "Data");
+    dlms_dissect_data(tvb, pinfo, subtree, &offset);
+}

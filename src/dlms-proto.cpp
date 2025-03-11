@@ -169,14 +169,14 @@ DLMSHeaderInfo dlms_hdr = // DLMSHeaderInfo dlms_hdr HFI_INIT(dlms_proto) =
     { &dlms_hfidx[i++], "Response Negotiated DLMS version-no", "dlms.initiate_response_negotiated_dlms_version_no", FT_UINT8, BASE_DEC, 0, 0, 0, HFILL },
     { &dlms_hfidx[i++], "Response VAA-Name Component", "dlms.initiate_response_vaa_name_component", FT_UINT16, BASE_HEX, 0, 0, 0, HFILL },
 
-    // Himanshu - Initiate Request (Glo-Ciphered)
+    // Himanshu - Ciphered APDU
         // Security Header //
             // Security Control Byte //
-    { &dlms_hfidx[i++], "Security Control Compression", "dlms.glo_initiate_request_security_control_compression", FT_UINT8, BASE_DEC, 0, 0x80, 0, HFILL },
-    { &dlms_hfidx[i++], "Security Control Key Set", "dlms.glo_initiate_request_security_control_key_set", FT_UINT8, BASE_DEC, 0, 0x40, 0, HFILL },
-    { &dlms_hfidx[i++], "Security Control Encryption", "dlms.glo_initiate_request_security_control_encryption", FT_UINT8, BASE_DEC, 0, 0x20, 0, HFILL },
-    { &dlms_hfidx[i++], "Security Control Authentication", "dlms.glo_initiate_request_security_control_authentication", FT_UINT8, BASE_DEC, 0, 0x10, 0, HFILL },
-    { &dlms_hfidx[i++], "Security Control Suite ID", "dlms.glo_initiate_request_security_control_suite_id", FT_UINT8, BASE_DEC, 0, 0x0f, 0, HFILL },
+    { &dlms_hfidx[i++], "Security Control Compression", "dlms.security_control_compression", FT_UINT8, BASE_DEC, 0, 0x80, 0, HFILL },
+    { &dlms_hfidx[i++], "Security Control Key Set", "dlms.security_control_key_set", FT_UINT8, BASE_DEC, 0, 0x40, 0, HFILL },
+    { &dlms_hfidx[i++], "Security Control Encryption", "dlms.security_control_encryption", FT_UINT8, BASE_DEC, 0, 0x20, 0, HFILL },
+    { &dlms_hfidx[i++], "Security Control Authentication", "dlms.security_control_authentication", FT_UINT8, BASE_DEC, 0, 0x10, 0, HFILL },
+    { &dlms_hfidx[i++], "Security Control Suite ID", "dlms.security_control_suite_id", FT_UINT8, BASE_DEC, 0, 0x0f, 0, HFILL },
             // Initiator Nonce //
     { &dlms_hfidx[i++], "Invocation Counter", "dlms.glo_initiate_request_invocation_counter", FT_UINT32, BASE_HEX_DEC, 0, 0, 0, HFILL },
         // Information // May be Plaintext or Compressed text
@@ -186,8 +186,8 @@ DLMSHeaderInfo dlms_hdr = // DLMSHeaderInfo dlms_hdr HFI_INIT(dlms_proto) =
         // Authentication Tag //
     { &dlms_hfidx[i++], "Authentication Tag", "dlms.glo_initiate_request_authentication_tag", FT_BYTES, SEP_SPACE, 0, 0, 0, HFILL },
 
-    // Himanshu - General APDUs
-    { &dlms_hfidx[i++], "System Title", "dlms.general_glo_ciphered_system_title", FT_BYTES, SEP_SPACE, 0, 0, 0, HFILL },
+    // Himanshu - General
+    { &dlms_hfidx[i++], "System Title", "dlms.system_title", FT_BYTES, SEP_SPACE, 0, 0, 0, HFILL },
 };
 
 /* Expert information (ei) fields */

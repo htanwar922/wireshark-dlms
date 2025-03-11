@@ -92,24 +92,47 @@ dlms_dissect_apdu(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, gint offs
         dlms_dissect_glo_set_response(tvb, pinfo, tree, offset);
     } else if (choice == DLMS_GLO_ACTION_RESPONSE) {
         dlms_dissect_glo_action_response(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_DED_GET_REQUEST) {
+        dlms_dissect_ded_get_request(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_DED_SET_REQUEST) {
+        dlms_dissect_ded_set_request(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_DED_EVENT_NOTIFICATION_REQUEST) {
+        dlms_dissect_ded_event_notification_request(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_DED_ACTION_REQUEST) {
+        dlms_dissect_ded_action_request(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_DED_GET_RESPONSE) {
+        dlms_dissect_ded_get_response(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_DED_SET_RESPONSE) {
+        dlms_dissect_ded_set_response(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_DED_ACTION_RESPONSE) {
+        dlms_dissect_ded_action_response(tvb, pinfo, tree, offset);
+
     } else if (choice == DLMS_GENERAL_GLO_CIPHERING) {
         dlms_dissect_general_glo_ciphered_apdu(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_GENERAL_DED_CIPHERING) {
+        dlms_dissect_general_ded_ciphered_apdu(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_GENERAL_CIPHERING) {
+        dlms_dissect_general_ciphered_apdu(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_GENERAL_SIGNING) {
+        dlms_dissect_general_signed_apdu(tvb, pinfo, tree, offset);
+    } else if (choice == DLMS_GENERAL_BLOCK_TRANSFER) {
+        dlms_dissect_general_block_transfer_apdu(tvb, pinfo, tree, offset);
     } else if (choice == 0) {
         gint length = dlms_get_length(tvb, &offset);
-        proto_tree *subtree = proto_tree_add_subtree(tree, tvb, offset, length, dlms_ett.glo_null, 0, "Null (Glo-Ciphered)");
+        proto_tree *subtree = proto_tree_add_subtree(tree, tvb, offset, length, dlms_ett.null, 0, "Null (Glo-Ciphered)");
 
         dlms_glo_ciphered_apdu apdu;
-        dlms_dissect_glo_ciphered_apdu(tvb, subtree, offset, length, &apdu);
+        dlms_dissect_ciphered_apdu(tvb, subtree, offset, length, &apdu);
 
         {{
-            tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, client_system_title, glo_AAD, pinfo);
+            tvbuff_t * tvb_plain = dlms_decrypt_ciphered_apdu(&apdu, glo_KEY, client_system_title, ciph_AAD, pinfo);
             subtree = proto_tree_add_subtree(tree, tvb_plain, 0, tvb_reported_length(tvb_plain), dlms_ett.null, 0, "Null (Decoded)");
             gboolean ret = dlms_dissect_apdu(tvb_plain, pinfo, subtree, 0);
             //tvb_free(tvb_plain);
             if (ret)
                 return true;
         }}{{
-            tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, server_system_title, glo_AAD, pinfo);
+            tvbuff_t * tvb_plain = dlms_decrypt_ciphered_apdu(&apdu, glo_KEY, server_system_title, ciph_AAD, pinfo);
             subtree = proto_tree_add_subtree(tree, tvb_plain, 0, tvb_reported_length(tvb_plain), dlms_ett.null, 0, "Null (Decoded)");
             gboolean ret = dlms_dissect_apdu(tvb_plain, pinfo, subtree, 0);
             //tvb_free(tvb_plain);
@@ -350,17 +373,22 @@ dlms_dissect(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, void *data)
 extern "C" {
 #endif
 
+// do no include in linux
+#ifdef _WIN32
 #include <direct.h>
+#endif
 
 const char* glo_KEY_str;
-const char* glo_AAD_str;
+const char* ciph_AAD_str;
+const char* ded_KEY_str;
 
 void dlms_prefs_cb() {
-    if (strlen(glo_KEY_str) != 32 || strlen(glo_AAD_str) != 32) {
+    if (strlen(glo_KEY_str) != 32 || strlen(ded_KEY_str) != 32 || strlen(ciph_AAD_str) != 32) {
         return;
     }
     hex_to_uint8(glo_KEY_str, glo_KEY, 16);
-    hex_to_uint8(glo_AAD_str, glo_AAD, 16);
+    hex_to_uint8(ded_KEY_str, ded_KEY, 16);
+    hex_to_uint8(ciph_AAD_str, ciph_AAD, 16);
 }
 
 void
@@ -407,7 +435,7 @@ dlms_register_protoinfo(void)
 
     std::string envFilePath = getenv("env:WIRESHARK_DLMS_CONFIG_FILE") ? getenv("env:WIRESHARK_DLMS_CONFIG_FILE") : "";
     envFilePath = not envFilePath.empty() ? envFilePath : getenv("WIRESHARK_DLMS_CONFIG_FILE") ? getenv("WIRESHARK_DLMS_CONFIG_FILE") : "";
-    envFilePath = not envFilePath.empty() ? envFilePath : std::string(g_path_get_dirname(__FILE__)) + "/../config/config.env";
+    //envFilePath = not envFilePath.empty() ? envFilePath : std::string(g_path_get_dirname(__FILE__)) + "/../config/config.env";
     if (not envFilePath.empty()) {
         std::map<std::string, std::string> envVariables = readEnvFile(envFilePath);
         if (envVariables.find("DLMS_GLO_KEY") != envVariables.end()) {
@@ -418,14 +446,14 @@ dlms_register_protoinfo(void)
         }
     }
 
-    /* Register preferences for glo_KEY and glo_AAD */
+    /* Register preferences for glo_KEY and ciph_AAD */
     module_t *dlms_module = prefs_register_protocol(dlms_proto, dlms_prefs_cb);
     glo_KEY_str = "000102030405060708090a0b0c0d0e0f";
-    glo_AAD_str = "d0d1d2d3d4d5d6d7d8d9dadbdcdddedf";
-    //uint8_to_hex(glo_KEY, glo_KEY_str, 16);
-    //uint8_to_hex(glo_AAD, glo_AAD_str, 16);
+    ded_KEY_str = "000102030405060708090a0b0c0d0e0f";
+    ciph_AAD_str = "d0d1d2d3d4d5d6d7d8d9dadbdcdddedf";
     prefs_register_string_preference(dlms_module, "glo_key", "Global Key", "Global key for ciphering and deciphering", &glo_KEY_str);
-    prefs_register_string_preference(dlms_module, "glo_aad", "Additional Authenticated Data", "Additional authenticated data for ciphering and deciphering", &glo_AAD_str);
+    prefs_register_string_preference(dlms_module, "glo_aad", "Additional Authenticated Data", "Additional authenticated data for ciphering and deciphering", &ciph_AAD_str);
+    prefs_register_string_preference(dlms_module, "ded_key", "Dedicated Key", "Dedicated key for ciphering and deciphering", &ded_KEY_str);
 }
 
 void

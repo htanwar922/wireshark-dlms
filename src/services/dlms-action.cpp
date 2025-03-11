@@ -88,9 +88,9 @@ dlms_dissect_glo_action_request(tvbuff_t *tvb, packet_info *pinfo, proto_tree *t
     proto_tree *subtree = proto_tree_add_subtree(tree, tvb, offset, length, dlms_ett.glo_action_request, 0, "Action-Request (Glo-Ciphered)");
 
     dlms_glo_ciphered_apdu apdu;
-    dlms_dissect_glo_ciphered_apdu(tvb, subtree, offset, length, &apdu);
+    dlms_dissect_ciphered_apdu(tvb, subtree, offset, length, &apdu);
 
-    tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, client_system_title, glo_AAD, pinfo);
+    tvbuff_t * tvb_plain = dlms_decrypt_ciphered_apdu(&apdu, glo_KEY, client_system_title, ciph_AAD, pinfo);
     dlms_dissect_action_request(tvb_plain, pinfo, subtree, 1);
     //tvb_free(tvb_plain);
 }
@@ -103,9 +103,35 @@ dlms_dissect_glo_action_response(tvbuff_t *tvb, packet_info *pinfo, proto_tree *
     proto_tree *subtree = proto_tree_add_subtree(tree, tvb, offset, length, dlms_ett.glo_action_response, 0, "Action-Response (Glo-Ciphered)");
 
     dlms_glo_ciphered_apdu apdu;
-    dlms_dissect_glo_ciphered_apdu(tvb, subtree, offset, length, &apdu);
+    dlms_dissect_ciphered_apdu(tvb, subtree, offset, length, &apdu);
 
-    tvbuff_t * tvb_plain = dlms_decrypt_glo_ciphered_apdu(&apdu, glo_KEY, server_system_title, glo_AAD, pinfo);
+    tvbuff_t * tvb_plain = dlms_decrypt_ciphered_apdu(&apdu, glo_KEY, server_system_title, ciph_AAD, pinfo);
     dlms_dissect_action_response(tvb_plain, pinfo, subtree, 1);
     //tvb_free(tvb_plain);
+}
+
+// Himanshu
+void
+dlms_dissect_ded_action_request(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, gint offset)
+{
+    gint length = dlms_get_length(tvb, &offset);
+    proto_tree *subtree = proto_tree_add_subtree(tree, tvb, offset, length, dlms_ett.ded_action_request, 0, "Action-Request (Ded-Ciphered)");
+
+    dlms_ded_ciphered_apdu apdu;
+    dlms_dissect_ciphered_apdu(tvb, subtree, offset, length, &apdu);
+
+    tvbuff_t * tvb_plain = dlms_decrypt_ciphered_apdu(&apdu, ded_KEY, client_system_title, ciph_AAD, pinfo);
+    dlms_dissect_action_request(tvb_plain, pinfo, subtree, 1);
+    //tvb_free(tvb_plain);
+}
+
+// Himanshu
+void
+dlms_dissect_ded_action_response(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, gint offset)
+{
+    gint length = dlms_get_length(tvb, &offset);
+    proto_tree *subtree = proto_tree_add_subtree(tree, tvb, offset, length, dlms_ett.ded_action_response, 0, "Action-Response (Ded-Ciphered)");
+
+    dlms_ded_ciphered_apdu apdu;
+    dlms_dissect_ciphered_apdu(tvb, subtree, offset, length, &apdu);
 }
