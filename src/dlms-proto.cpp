@@ -1,4 +1,4 @@
-
+#include <cstdint>
 #include "utils/dlms-defs.h"
 #include "utils/dlms-hdlc.h"
 #include "utils/dlms-bits.h"
@@ -16,6 +16,11 @@ DLMSSubtree dlms_ett;
 /* Indexes for the DLMS header_field_info (hfi) structures */
 static int dlms_hfidx[sizeof (DLMSHeaderInfo) / sizeof (hf_register_info)]{ 0 };
 static int i = 0;
+
+// static void
+// format_instance_id(char* buf, uint64_t value) {
+//     g_snprintf(buf, 12, "Instance ID: %012" G_GINT64_MODIFIER "X", value);
+// }
 
 /* The DLMS header_field_info (hfi) structures */
 DLMSHeaderInfo dlms_hdr = // DLMSHeaderInfo dlms_hdr HFI_INIT(dlms_proto) =
@@ -44,7 +49,10 @@ DLMSHeaderInfo dlms_hdr = // DLMSHeaderInfo dlms_hdr HFI_INIT(dlms_proto) =
     { &dlms_hfidx[i++], "IEC 4-32 LLC Header", "dlms.iec432llc", FT_NONE, BASE_NONE, 0, 0, 0, HFILL },
 
     /* Wrapper Protocol Data Unit (WPDU) */
-    { &dlms_hfidx[i++], "Wrapper Header", "dlms.wrapper", FT_NONE, BASE_NONE, 0, 0, 0, HFILL },
+    { &dlms_hfidx[i++], "Version", "dlms.wrapper.version", FT_UINT16, BASE_DEC, 0, 0, 0, HFILL },
+    { &dlms_hfidx[i++], "Source Port", "dlms.wrapper.source_port", FT_UINT16, BASE_HEX_DEC, 0, 0, 0, HFILL },
+    { &dlms_hfidx[i++], "Destination Port", "dlms.wrapper.destination_port", FT_UINT16, BASE_HEX_DEC, 0, 0, 0, HFILL },
+    { &dlms_hfidx[i++], "Length", "dlms.wrapper.length", FT_UINT16, BASE_DEC, 0, 0, 0, HFILL },
 
     /* APDU */
     { &dlms_hfidx[i++], "APDU", "dlms.apdu", FT_UINT8, BASE_DEC, dlms_apdu_names, 0, 0, HFILL },
@@ -58,9 +66,9 @@ DLMSHeaderInfo dlms_hdr = // DLMSHeaderInfo dlms_hdr HFI_INIT(dlms_proto) =
     { &dlms_hfidx[i++], "Action Response", "dlms.action_response", FT_UINT8, BASE_DEC, dlms_action_response_names, 0, 0, HFILL },
     { &dlms_hfidx[i++], "Access Request", "dlms.action_request", FT_UINT8, BASE_DEC, dlms_access_request_names, 0, 0, HFILL },
     { &dlms_hfidx[i++], "Access Response", "dlms.action_response", FT_UINT8, BASE_DEC, dlms_access_response_names, 0, 0, HFILL },
-    { &dlms_hfidx[i++], "Class Id", "dlms.class_id", FT_NONE, BASE_NONE, 0, 0, 0, HFILL },
-    { &dlms_hfidx[i++], "Instance Id", "dlms.instance_id", FT_NONE, BASE_NONE, 0, 0, 0, HFILL },
-    { &dlms_hfidx[i++], "Attribute Id", "dlms.attribute_id", FT_NONE, BASE_NONE, 0, 0, 0, HFILL },
+    { &dlms_hfidx[i++], "Class Id", "dlms.class_id", FT_UINT16, BASE_DEC, 0, 0, 0, HFILL },
+    { &dlms_hfidx[i++], "Instance Id", "dlms.instance_id", FT_UINT48, BASE_HEX, 0, 0, 0, HFILL},   /* BASE_CUSTOM, CF_FUNC(format_instance_id) */
+    { &dlms_hfidx[i++], "Attribute Id", "dlms.attribute_id", FT_UINT8, BASE_DEC, 0, 0, 0, HFILL },
     { &dlms_hfidx[i++], "Method Id", "dlms.method_id", FT_UINT8, BASE_DEC, 0, 0, 0, HFILL },
     { &dlms_hfidx[i++], "Access Selector", "dlms.access_selector", FT_UINT8, BASE_DEC, 0, 0, 0, HFILL },
     { &dlms_hfidx[i++], "Data Access Result", "dlms.data_access_result", FT_UINT8, BASE_DEC, dlms_data_access_result_names, 0, 0, HFILL },
@@ -70,7 +78,6 @@ DLMSHeaderInfo dlms_hdr = // DLMSHeaderInfo dlms_hdr HFI_INIT(dlms_proto) =
     { &dlms_hfidx[i++], "Type Description", "dlms.type_description", FT_NONE, BASE_NONE, 0, 0, 0, HFILL },
     { &dlms_hfidx[i++], "Data", "dlms.data", FT_NONE, BASE_NONE, 0, 0, 0, HFILL },
     { &dlms_hfidx[i++], "Date-Time", "dlms.date_time", FT_NONE, BASE_NONE, 0, 0, 0, HFILL },
-    { &dlms_hfidx[i++], "Length", "dlms.length", FT_NONE, BASE_NONE, 0, 0, 0, HFILL },
     { &dlms_hfidx[i++], "State Error", "dlms.state_error", FT_UINT8, BASE_DEC, dlms_state_error_names, 0, 0, HFILL },
     { &dlms_hfidx[i++], "Service Error", "dlms.service_error", FT_UINT8, BASE_DEC, dlms_service_error_names, 0, 0, HFILL },
 

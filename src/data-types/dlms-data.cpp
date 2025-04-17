@@ -132,7 +132,8 @@ dlms_dissect_datablock_data(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree,
     rtvb = process_reassembled_data(tvb, *offset, pinfo, "Reassembled", frags, &dlms_fragment_items, 0, tree);
     if (rtvb) {
         gint offset = 0;
-        subtree = proto_tree_add_subtree(tree, rtvb, 0, 0, dlms_ett.data, 0, "Reassembled Data");
+        subtree = proto_tree_add_subtree(tree, rtvb, offset, 0, dlms_ett.data, 0, "Reassembled Data");
+        proto_item_set_len(subtree, tvb_reported_length_remaining(rtvb, offset));
         dlms_dissect_data(rtvb, pinfo, subtree, &offset);
     }
 

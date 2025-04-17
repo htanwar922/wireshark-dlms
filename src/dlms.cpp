@@ -335,7 +335,17 @@ dlms_dissect_432(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree)
 void
 dlms_dissect_wrapper(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree)
 {
-    proto_tree_add_item(tree, *dlms_hdr.wrapper_header.p_id, tvb, 0, 8, ENC_NA);
+    guint offset = 0;
+    proto_tree* subtree = proto_tree_add_subtree(tree, tvb, 0, 8, dlms_ett.wrapper, 0, "Wrapper Header");
+    proto_tree_add_item(subtree, *dlms_hdr.version.p_id, tvb, offset, 2, ENC_BIG_ENDIAN);
+    offset += 2;
+    proto_tree_add_item(subtree, *dlms_hdr.source_port.p_id, tvb, offset, 2, ENC_BIG_ENDIAN);
+    offset += 2;
+    proto_tree_add_item(subtree, *dlms_hdr.destination_port.p_id, tvb, offset, 2, ENC_BIG_ENDIAN);
+    offset += 2;
+    proto_tree_add_item(subtree, *dlms_hdr.length.p_id, tvb, offset, 2, ENC_BIG_ENDIAN);
+    offset += 2;
+
     dlms_dissect_apdu(tvb, pinfo, tree, 8);
 }
 

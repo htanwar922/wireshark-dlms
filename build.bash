@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 WIRESHARK_VERSION=`wireshark --version | grep -E "Wireshark [0-9].[0-9].[0-9]" | awk '{print $2}'`
 
@@ -10,15 +10,11 @@ if [ ! -d "$bindir" ]; then
 fi
 
 cd $basedir
-SRC_FILES="$(find src -type f -name '*.cpp' | tr '\n' ' ' )"
+SRC_FILES=($(find src -type f -name '*.cpp'))
 cd -
 
-i=0
-for file in $SRC_FILES; do
-	if [ $i -eq 40 ]; then
-		break
-	fi
-	i=$((i+1))
+pids=()
+for file in ${SRC_FILES[@]}; do
 	echo "Compiling $file"
 	# dir=$bindir/$(dirname $file); objfile=${file%.cpp}.o
 	dir=$bindir/CMakeFiles/dlms-static.dir/$(dirname $file); objfile=$file.o
@@ -31,16 +27,22 @@ for file in $SRC_FILES; do
 		-I$basedir/include \
 		-fPIC \
 		-c $basedir/$file \
-		-o $dir/$(basename $objfile)
+		-o $dir/$(basename $objfile) &
+	pids+=($!)
+done
+
+echo "Waiting for all compilations to finish..."
+for i in ${!pids[@]}; do
+	wait ${pids[$i]}
 	if [ $? -ne 0 ]; then
-		echo "Error compiling $file"
+		echo "Compilation failed for ${SRC_FILES[$i]}"
 		exit 1
 	fi
 done
 
 cp $basedir/packet-dlms.cpp $bindir/packet-dlms.c
 
-ar rs $bindir/libdlms-static.a $(find $bindir -type f -name "*.o" | tr '\n' ' ') \
+ar rs $bindir/libdlms-static.a $(find $bindir -type f -name "*.o") \
 && ranlib $bindir/libdlms-static.a \
 && \
 gcc -Wall -Wno-sign-compare \

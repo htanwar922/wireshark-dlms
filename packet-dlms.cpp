@@ -4,7 +4,8 @@
 #ifdef _WIN32
 #include "dlms.h"
 #else
-#include "../include/dlms.h"
+// #include "../include/dlms.h"
+#include "dlms.h"
 #endif
 
 #ifdef __cplusplus
@@ -24,7 +25,7 @@ proto_register_dlms(void)
 void
 proto_reg_handoff_dlms(void)
 {
-     dlms_reg_handoff();
+    dlms_reg_handoff();
 }
 
 #elif (VERSION_MAJOR > 2) || ((VERSION_MAJOR == 2) && (VERSION_MINOR >= 6))

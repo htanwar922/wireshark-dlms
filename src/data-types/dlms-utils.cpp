@@ -33,8 +33,8 @@ dlms_dissect_length(tvbuff_t *tvb, proto_tree *tree, gint *offset)
 
     start = *offset;
     length = dlms_get_length(tvb, offset);
-    item = proto_tree_add_item(tree, *dlms_hdr.length.p_id, tvb, start, *offset - start, ENC_NA);
-    proto_item_append_text(item, ": %u", length);
+    item = proto_tree_add_item(tree, *dlms_hdr.null.p_id, tvb, start, *offset - start, ENC_NA);
+    proto_item_append_text(item, "Length : %u", length);
 
     return length;
 }

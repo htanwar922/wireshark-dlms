@@ -18,6 +18,8 @@ dlms_dissect_action_request(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree,
     int choice, method_invocation_parameters;
     proto_tree *subtree;
 
+    tree = proto_tree_add_subtree(tree, tvb, offset, 0, dlms_ett.action_request, 0, "Action-Request");
+    proto_item_set_len(tree, tvb_reported_length_remaining(tvb, offset));
     proto_tree_add_item(tree, *dlms_hdr.action_request.p_id, tvb, offset, 1, ENC_NA);
     choice = tvb_get_guint8(tvb, offset);
     offset += 1;
@@ -28,7 +30,8 @@ dlms_dissect_action_request(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree,
         method_invocation_parameters = tvb_get_guint8(tvb, offset);
         if (method_invocation_parameters) {
             offset += 1;
-            subtree = proto_tree_add_subtree(tree, tvb, 0, 0, dlms_ett.data, 0, "Data");
+            subtree = proto_tree_add_subtree(tree, tvb, offset, 0, dlms_ett.data, 0, "Data");
+            proto_item_set_len(subtree, tvb_reported_length_remaining(tvb, offset));
             dlms_dissect_data(tvb, pinfo, subtree, &offset);
         }
     } else {
@@ -43,6 +46,8 @@ dlms_dissect_action_response(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree
     const gchar *result_name;
     proto_item *item;
 
+    tree = proto_tree_add_subtree(tree, tvb, offset, 0, dlms_ett.action_response, 0, "Action-Response");
+    proto_item_set_len(tree, tvb_reported_length_remaining(tvb, offset));
     proto_tree_add_item(tree, *dlms_hdr.action_response.p_id, tvb, offset, 1, ENC_NA);
     choice = tvb_get_guint8(tvb, offset);
     offset += 1;
@@ -66,6 +71,7 @@ dlms_dissect_action_response(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree
             switch (result) {
             case 0:
                 dlms_dissect_data(tvb, pinfo, subtree, &offset);
+                proto_item_set_len(subtree, offset);
                 break;
             case 1:
                 col_add_str(pinfo->cinfo, COL_INFO, " (Data-Access-Result)");
@@ -134,4 +140,8 @@ dlms_dissect_ded_action_response(tvbuff_t *tvb, packet_info *pinfo, proto_tree *
 
     dlms_ded_ciphered_apdu apdu;
     dlms_dissect_ciphered_apdu(tvb, subtree, offset, length, &apdu);
+
+    tvbuff_t * tvb_plain = dlms_decrypt_ciphered_apdu(&apdu, ded_KEY, server_system_title, ciph_AAD, pinfo);
+    dlms_dissect_action_response(tvb_plain, pinfo, subtree, 1);
+    //tvb_free(tvb_plain);
 }

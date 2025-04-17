@@ -23,6 +23,7 @@ struct DLMSSubtree {
     gint composite_data;
     gint datablock;
     gint data;
+    gint wrapper;
 
     /* fragment_items */
     gint fragment;
@@ -64,11 +65,16 @@ struct DLMSSubtree {
     // Himanshu - Requests
     gint initiate_request;
     gint get_request;
+    gint set_request;
+    gint action_request;
+    gint event_notification_request;
     gint access_request;
 
     // Himanshu - Responses
     gint initiate_response;
     gint get_response;
+    gint set_response;
+    gint action_response;
     gint access_response;
 
     gint conformance; /* InitiateRequest proposed-conformance and InitiateResponse negotiated-confirmance */
@@ -139,7 +145,10 @@ struct DLMSHeaderInfo
     hf_register_info iec432llc;
 
     /* 17: Wrapper Protocol Data Unit (WPDU) */
-    hf_register_info wrapper_header;
+    hf_register_info version;
+    hf_register_info source_port;
+    hf_register_info destination_port;
+    hf_register_info length;
 
     /* 18: APDU */
     hf_register_info apdu;
@@ -165,7 +174,6 @@ struct DLMSHeaderInfo
     hf_register_info type_description;
     hf_register_info data;
     hf_register_info date_time;
-    hf_register_info length;
     hf_register_info state_error;
     hf_register_info service_error;
 

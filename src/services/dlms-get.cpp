@@ -19,7 +19,8 @@ dlms_dissect_get_request(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, gi
     int choice;
     unsigned block_number;
 
-    tree = proto_tree_add_subtree(tree, tvb, 0, tvb_reported_length(tvb), dlms_ett.get_request, 0, "Get-Request");
+    tree = proto_tree_add_subtree(tree, tvb, offset, 0, dlms_ett.get_request, 0, "Get-Request");
+    proto_item_set_len(tree, tvb_reported_length_remaining(tvb, offset));
     proto_tree_add_item(tree, *dlms_hdr.get_request.p_id, tvb, offset, 1, ENC_NA);
     choice = tvb_get_guint8(tvb, offset);
     offset += 1;
@@ -44,7 +45,8 @@ dlms_dissect_get_response(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, g
     int choice, result;
     proto_tree *subtree;
 
-    tree = proto_tree_add_subtree(tree, tvb, 0, tvb_reported_length(tvb), dlms_ett.get_request, 0, "Get-Response");
+    tree = proto_tree_add_subtree(tree, tvb, offset, 0, dlms_ett.get_response, 0, "Get-Response");
+    proto_item_set_len(tree, tvb_reported_length_remaining(tvb, offset));
     proto_tree_add_item(tree, *dlms_hdr.get_response.p_id, tvb, offset, 1, ENC_NA);
     choice = tvb_get_guint8(tvb, offset);
     offset += 1;
@@ -54,7 +56,8 @@ dlms_dissect_get_response(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree, g
         result = tvb_get_guint8(tvb, offset);
         offset += 1;
         if (result == 0) {
-            subtree = proto_tree_add_subtree(tree, tvb, 0, 0, dlms_ett.data, 0, "Data");
+            subtree = proto_tree_add_subtree(tree, tvb, offset, 0, dlms_ett.data, 0, "Data");
+            proto_item_set_len(subtree, tvb_reported_length_remaining(tvb, offset));
             dlms_dissect_data(tvb, pinfo, subtree, &offset);
         } else if (result == 1) {
             dlms_dissect_data_access_result(tvb, pinfo, tree, &offset);

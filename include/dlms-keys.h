@@ -98,7 +98,7 @@ public:
 		if (tag) {
 			err = gcry_cipher_checktag(handle, tag, TAG_LEN);
 			if (err) {
-				g_print("Failed to check tag");
+				//g_print("Failed to check tag");
 			}
 		}
 
